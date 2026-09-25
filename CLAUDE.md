@@ -39,15 +39,17 @@ přečte svou roli/slovo a schová.
   slovo, bylo nahrazeno.
 
 ## Plán / co zbývá
-1. ✅ HOTOVO (2026-09-25): Git repo + GitHub — veřejné repo
-   https://github.com/romanslahunek-beep/impostor-hra, větev `main`.
+1. ✅ HOTOVO (2026-09-25): Git repo + GitHub — veřejné repo v GitHub
+   organizaci `Impostor-hra`: https://github.com/Impostor-hra/impostor-hra.github.io,
+   větev `main`. (Původně `romanslahunek-beep/impostor-hra`, přesunuto,
+   aby v adrese hry nebylo jméno uživatele.)
 2. ✅ HOTOVO (2026-09-25): GitHub Pages — hra běží na
-   https://romanslahunek-beep.github.io/impostor-hra/ (nasazuje se
-   automaticky z `main` při každém pushi).
+   **https://impostor-hra.github.io/** (nasazuje se automaticky z `main`
+   při každém pushi). Stará adresa `romanslahunek-beep.github.io/impostor-hra`
+   už nefunguje.
    Na ploše PC je zástupce `Impostor.lnk` (Edge v režimu `--app`, ikona
    `%LOCALAPPDATA%\Impostor\impostor.ico`).
-3. Později: vlastní doména. Uživateli vadí jméno účtu v adrese — alternativa
-   je GitHub organizace (adresa `<nazev>.github.io`, repo jde přesunout).
+3. Později: vlastní doména (jde přidat k současné adrese kdykoli).
 3b. **OTEVŘENÁ OTÁZKA — 2 impostoři:** při 3 hráčích se 2 impostoři domluví
    a přehlasují jediného poctivého. Navrženo (čeká na souhlas uživatele):
    2 impostoři až od 5 hráčů; hráči vyhrávají, když chytí aspoň jednoho.
