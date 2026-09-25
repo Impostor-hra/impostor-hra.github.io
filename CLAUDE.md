@@ -1,5 +1,10 @@
 # IMPOSTOR — párty slovní hra
 
+> **PŘIPOMENOUT UŽIVATELI na začátku příští session** (sám o to požádal
+> 2026-09-25): rozhodnout Google Fonts (vložit písma do souboru vs.
+> systémová písma, viz bod 3c) — nutné kvůli App Store. Pak pokračovat
+> přípravou na App Store (bod 5). Po připomenutí tuhle poznámku smazat.
+
 ## Co to je
 Jednosouborová webová appka (`index.html`, čistý HTML/CSS/JS, žádný build krok,
 žádné závislosti). Česká párty hra typu "kdo je podvodník" pro pass-and-play
