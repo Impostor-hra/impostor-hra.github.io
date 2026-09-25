@@ -33,12 +33,29 @@ přečte svou roli/slovo a schová.
   `icon-192.png`, `icon-512.png`, `manifest.json` — motiv maska v barvách
   appky (tmavé pozadí + růžovo-oranžový gradient, styl shodný s UI appky).
 
+- Opraveno 2026-09-25: tip v „poslední šanci“ se porovnává bez diakritiky,
+  prázdný tip nejde odeslat, nový hráč dostane volné jméno „Hráč N“
+  a hra nezačne při duplicitních jménech, 11 nápověd, které prozrazovaly
+  slovo, bylo nahrazeno.
+
 ## Plán / co zbývá
-1. Git repo + GitHub (propojit stejně jako u sesterského projektu
-   `gramaticka-posilovna`) a push.
-2. GitHub Pages hosting — soubor je záměrně pojmenovaný `index.html`
-   přesně kvůli tomu, aby GitHub Pages fungovalo bez dalšího nastavování.
-3. Později: vlastní doména.
+1. ✅ HOTOVO (2026-09-25): Git repo + GitHub — veřejné repo
+   https://github.com/romanslahunek-beep/impostor-hra, větev `main`.
+2. ✅ HOTOVO (2026-09-25): GitHub Pages — hra běží na
+   https://romanslahunek-beep.github.io/impostor-hra/ (nasazuje se
+   automaticky z `main` při každém pushi).
+   Na ploše PC je zástupce `Impostor.lnk` (Edge v režimu `--app`, ikona
+   `%LOCALAPPDATA%\Impostor\impostor.ico`).
+3. Později: vlastní doména. Uživateli vadí jméno účtu v adrese — alternativa
+   je GitHub organizace (adresa `<nazev>.github.io`, repo jde přesunout).
+3b. **OTEVŘENÁ OTÁZKA — 2 impostoři:** při 3 hráčích se 2 impostoři domluví
+   a přehlasují jediného poctivého. Navrženo (čeká na souhlas uživatele):
+   2 impostoři až od 5 hráčů; hráči vyhrávají, když chytí aspoň jednoho.
+3c. Nevyřešené drobnosti z kontroly kódu (uživatel zatím neřekl, zda opravit):
+   Google Fonts jako externí závislost (GDPR), v kódu zálohy se čísla
+   neescapují (self-XSS), `correctVotes` se počítá, ale nezobrazuje, přerušená
+   hra se počítá jako odehraná, prázdná CSS pravidla na začátku `<style>`,
+   „Trůny“ → „Hra o trůny“, „Frozen“ → „Ledové království“.
 4. Později: možnost přepnout jazyk (čeština/angličtina) — vyžaduje vytáhnout
    UI texty do slovníku (aktuálně jsou napevno v render funkcích) a vytvořit
    druhou, anglickou databázi slov + jednoslovných nápověd (ne jen strojový
