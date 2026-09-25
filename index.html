@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Impostor">
+<meta name="theme-color" content="#12101c">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<title>IMPOSTOR — Party hra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-1:#12101c;
+  --bg-2:#1b1730;
+  --bg-3:#241d3d;
+  --card:#211c38;
+  --card-2:#2a2347;
+  --border:rgba(255,255,255,0.08);
+  --text:#f2eefb;
+  --text-dim:#a9a2c6;
+  --text-faint:#7b74a0;
+  --accent:#ff3d78;
+  --accent-2:#ff7a3d;
+  --good:#3ddc97;
+  --good-2:#2bb583;
+  --warn:#ffcc4d;
+  --impostor:#ff3d78;
+  --shadow: 0 20px 60px rgba(0,0,0,0.45);
+}
+:root:not([data-theme="light"]){ }
+:root[data-theme="dark"]{ }
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="light"]){ }
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(1100px 700px at 15% -10%, rgba(255,61,120,0.16), transparent 60%),
+    radial-gradient(900px 600px at 110% 10%, rgba(61,220,151,0.10), transparent 55%),
+    linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+  color:var(--text);
+  font-family:'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.title-font{font-family:'Fredoka', 'Poppins', system-ui, sans-serif;}
+
+#app{
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:calc(24px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+}
+.wrap{
+  width:100%;
+  max-width:460px;
+  margin:0 auto;
+}
+.screen{
+  animation: screenIn .38s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes screenIn{
+  from{opacity:0; transform:translateY(14px) scale(.98);}
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+@keyframes popIn{
+  0%{opacity:0; transform:scale(.85);}
+  100%{opacity:1; transform:scale(1);}
+}
+@keyframes pulseGlow{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,61,120,.35);}
+  50%{box-shadow:0 0 0 14px rgba(255,61,120,0);}
+}
+@keyframes floaty{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+
+.card{
+  background:linear-gradient(180deg, var(--card), var(--card-2));
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:28px 24px;
+  box-shadow:var(--shadow);
+}
+
+.eyebrow{
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-faint);
+  margin:0 0 6px;
+  text-align:center;
+}
+h1.logo{
+  font-family:'Fredoka', sans-serif;
+  font-size:52px;
+  text-align:center;
+  margin:0 0 4px;
+  letter-spacing:.02em;
+  background:linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:floaty 3.5s ease-in-out infinite;
+}
+.subtitle{
+  text-align:center;
+  color:var(--text-dim);
+  font-size:15px;
+  margin:0 0 34px;
+}
+.mask-row{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  font-size:34px;
+  margin-bottom:18px;
+}
+
+.btn{
+  display:block;
+  width:100%;
+  border:none;
+  border-radius:16px;
+  padding:17px 20px;
+  font-family:inherit;
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:.02em;
+  cursor:pointer;
+  text-align:center;
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease, filter .15s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:scale(.97);}
+.btn + .btn{margin-top:12px;}
+.btn-primary{
+  background:linear-gradient(90deg, var(--accent), var(--accent-2));
+  color:#1a0d16;
+  box-shadow:0 10px 28px rgba(255,61,120,.35);
+}
+.btn-primary:hover{filter:brightness(1.06);}
+.btn-secondary{
+  background:var(--card-2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{background:#332a55;}
+.btn-ghost{
+  background:transparent;
+  color:var(--text-dim);
+  border:1px solid var(--border);
+}
+.btn-good{
+  background:linear-gradient(90deg, var(--good), var(--good-2));
+  color:#062017;
+  box-shadow:0 10px 28px rgba(61,220,151,.3);
+}
+.btn:disabled{opacity:.35; cursor:not-allowed; filter:none; box-shadow:none;}
+.btn-sm{padding:10px 14px; font-size:13px; border-radius:12px;}
+
+.row-between{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+
+.top-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+.icon-btn{
+  background:var(--card-2);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  width:40px;height:40px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  font-size:18px;
+  flex:none;
+}
+.icon-btn:active{transform:scale(.92);}
+
+.section-title{
+  font-family:'Fredoka', sans-serif;
+  font-size:22px;
+  margin:0 0 4px;
+}
+.section-sub{
+  color:var(--text-dim);
+  font-size:14px;
+  margin:0 0 20px;
+  line-height:1.5;
+}
+
+.field{margin-bottom:20px;}
+.field-label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:var(--text-faint);
+  font-weight:700;
+  margin-bottom:10px;
+  display:block;
+}
+.choice-grid{display:flex; gap:10px;}
+.choice-grid.col2{display:grid; grid-template-columns:1fr 1fr;}
+.choice-grid.col3{display:grid; grid-template-columns:1fr 1fr 1fr;}
+.choice{
+  border:1.5px solid var(--border);
+  background:var(--card-2);
+  color:var(--text-dim);
+  border-radius:14px;
+  padding:12px 8px;
+  text-align:center;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.choice.wide{padding:14px 10px;}
+.choice small{display:block; font-weight:500; font-size:11px; margin-top:3px; opacity:.8;}
+.choice.active{
+  border-color:var(--accent);
+  background:linear-gradient(180deg, rgba(255,61,120,.18), rgba(255,122,61,.10));
+  color:var(--text);
+  box-shadow:0 6px 18px rgba(255,61,120,.18);
+}
+select.select{
+  width:100%;
+  padding:14px 16px;
+  border-radius:14px;
+  border:1.5px solid var(--border);
+  background:var(--card-2);
+  color:var(--text);
+  font-family:inherit;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+.stack-choice{display:flex; flex-direction:column; gap:10px;}
+.stack-choice .choice{text-align:left; display:flex; align-items:center; gap:12px; padding:14px 16px;}
+.stack-choice .choice .dot{
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid var(--text-faint);
+  flex:none;
+  position:relative;
+}
+.stack-choice .choice.active .dot{border-color:var(--accent);}
+.stack-choice .choice.active .dot::after{
+  content:'';position:absolute; inset:3px; border-radius:50%; background:var(--accent);
+}
+.stack-choice .choice .label-main{font-size:14.5px; font-weight:700; color:var(--text);}
+.stack-choice .choice .label-sub{font-size:12px; color:var(--text-dim); font-weight:500; margin-top:2px;}
+
+.player-list{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+.player-item{
+  display:flex; align-items:center; gap:10px;
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:8px 8px 8px 16px;
+}
+.player-num{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  color:#1a0d16;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px; font-weight:800; flex:none;
+}
+.player-input{
+  flex:1;
+  background:transparent;
+  border:none;
+  color:var(--text);
+  font-family:inherit;
+  font-size:15px;
+  font-weight:600;
+  padding:8px 0;
+  outline:none;
+}
+.player-remove{
+  width:32px;height:32px;border-radius:10px;
+  background:rgba(255,61,120,.12);
+  color:var(--accent);
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+  flex:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.player-remove:disabled{opacity:.25; cursor:not-allowed;}
+.hint-note{
+  font-size:12.5px;
+  color:var(--text-faint);
+  text-align:center;
+  margin-top:6px;
+}
+.chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;}
+.chip{
+  background:var(--card-2);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  border-radius:999px;
+  padding:9px 15px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.chip:active{transform:scale(.94);}
+.chip.active{
+  border-color:var(--accent);
+  background:linear-gradient(180deg, rgba(255,61,120,.18), rgba(255,122,61,.10));
+  color:var(--text);
+}
+.stat-row{
+  display:flex; align-items:center; gap:10px;
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 14px;
+}
+.stat-row .srank{width:22px; text-align:center; font-weight:800; color:var(--text-faint); font-size:13px; flex:none;}
+.stat-row .sname{flex:1.3; font-weight:700; font-size:14px;}
+.stat-row .sval{flex:1; text-align:center; font-size:12.5px; color:var(--text-dim); font-weight:600;}
+.warn-box{
+  background:rgba(255,204,77,.1);
+  border:1px solid rgba(255,204,77,.35);
+  color:var(--warn);
+  font-size:13px;
+  font-weight:600;
+  border-radius:12px;
+  padding:12px 14px;
+  margin-bottom:16px;
+  text-align:center;
+}
+
+/* Pass & play */
+.handoff{
+  text-align:center;
+  padding:20px 4px 8px;
+}
+.handoff .avatar{
+  width:84px;height:84px;
+  margin:0 auto 18px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px; font-weight:800; color:#1a0d16;
+  animation:pulseGlow 2.2s ease-in-out infinite;
+}
+.handoff .passline{color:var(--text-dim); font-size:13px; text-transform:uppercase; letter-spacing:.12em; font-weight:700; margin-bottom:6px;}
+.handoff .name{font-family:'Fredoka', sans-serif; font-size:30px; margin:0 0 22px;}
+.progress-dots{display:flex; justify-content:center; gap:6px; margin-bottom:18px;}
+.progress-dots span{width:7px;height:7px;border-radius:50%; background:var(--border);}
+.progress-dots span.done{background:var(--good);}
+.progress-dots span.current{background:var(--accent); transform:scale(1.3);}
+
+.reveal-card{
+  border-radius:20px;
+  padding:34px 20px;
+  text-align:center;
+  animation:popIn .35s cubic-bezier(.2,.8,.2,1);
+  margin-bottom:18px;
+  border:1.5px solid var(--border);
+}
+.reveal-card.role-good{
+  background:linear-gradient(160deg, rgba(61,220,151,.16), rgba(61,220,151,.03));
+  border-color:rgba(61,220,151,.4);
+}
+.reveal-card.role-bad{
+  background:linear-gradient(160deg, rgba(255,61,120,.2), rgba(255,61,120,.04));
+  border-color:rgba(255,61,120,.45);
+}
+.reveal-tag{
+  font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--text-dim); margin-bottom:14px;
+}
+.reveal-emoji{font-size:52px; margin-bottom:6px; display:block;}
+.reveal-word{
+  font-family:'Fredoka', sans-serif;
+  font-size:34px;
+  line-height:1.15;
+  margin:4px 0 10px;
+}
+.role-bad .reveal-word{color:var(--impostor);}
+.reveal-note{color:var(--text-dim); font-size:14px; line-height:1.5;}
+
+.rules-box{
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px 18px;
+  margin-bottom:20px;
+}
+.rules-box p{margin:0 0 10px; font-size:14px; color:var(--text-dim); line-height:1.55;}
+.rules-box p:last-child{margin-bottom:0;}
+.rules-box ol{margin:0; padding-left:20px; color:var(--text-dim); font-size:14px; line-height:1.7;}
+.rules-box li{margin-bottom:4px;}
+.rules-box li b{color:var(--text);}
+
+.turn-card{
+  text-align:center;
+  padding:34px 20px;
+}
+.turn-tag{color:var(--text-faint); font-size:13px; text-transform:uppercase; letter-spacing:.12em; font-weight:700; margin-bottom:10px;}
+.turn-name{font-family:'Fredoka', sans-serif; font-size:36px; margin:0;}
+
+.timer-ring{
+  width:150px;height:150px;
+  margin:6px auto 22px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:conic-gradient(var(--accent) calc(var(--pct,100)*1%), rgba(255,255,255,.07) 0);
+  position:relative;
+}
+.timer-ring::before{
+  content:'';
+  position:absolute; inset:8px;
+  border-radius:50%;
+  background:var(--card);
+}
+.timer-ring .t{
+  position:relative;
+  font-family:'Fredoka', sans-serif;
+  font-size:34px;
+  z-index:1;
+}
+.timer-none{
+  text-align:center;
+  color:var(--text-faint);
+  font-size:14px;
+  margin:10px 0 24px;
+}
+
+.vote-grid{display:flex; flex-direction:column; gap:10px; margin-bottom:8px;}
+.vote-option{
+  background:var(--card-2);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  padding:15px 18px;
+  color:var(--text);
+  font-weight:700;
+  font-size:15.5px;
+  text-align:left;
+  cursor:pointer;
+  display:flex; align-items:center; gap:12px;
+}
+.vote-option:active{transform:scale(.98); border-color:var(--accent);}
+.vote-option .num{
+  width:30px;height:30px;border-radius:9px;
+  background:var(--bg-2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px; color:var(--text-dim); flex:none;
+}
+
+.results-list{display:flex; flex-direction:column; gap:8px; margin-bottom:22px;}
+.results-row{
+  display:flex; align-items:center; gap:12px;
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:11px 14px;
+}
+.results-row .rname{flex:1; font-weight:600; font-size:14.5px;}
+.results-row .rbar-wrap{flex:1; background:rgba(255,255,255,.06); border-radius:8px; height:8px; overflow:hidden;}
+.results-row .rbar{height:100%; background:linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius:8px;}
+.results-row .rcount{font-size:12.5px; color:var(--text-dim); font-weight:700; width:56px; text-align:right;}
+.results-row.top{border-color:rgba(255,61,120,.4);}
+
+.verdict{
+  text-align:center;
+  padding:26px 18px;
+  border-radius:18px;
+  margin-bottom:20px;
+  animation:popIn .4s cubic-bezier(.2,.8,.2,1);
+}
+.verdict.bad{background:linear-gradient(160deg, rgba(255,61,120,.22), rgba(255,61,120,.04)); border:1.5px solid rgba(255,61,120,.45);}
+.verdict.good{background:linear-gradient(160deg, rgba(61,220,151,.2), rgba(61,220,151,.04)); border:1.5px solid rgba(61,220,151,.4);}
+.verdict.neutral{background:var(--card-2); border:1.5px solid var(--border);}
+.verdict-emoji{font-size:44px; display:block; margin-bottom:8px;}
+.verdict-title{font-family:'Fredoka', sans-serif; font-size:24px; margin:0 0 6px;}
+.verdict-sub{color:var(--text-dim); font-size:14px;}
+
+.guess-input{
+  width:100%;
+  padding:16px 18px;
+  border-radius:14px;
+  border:1.5px solid var(--border);
+  background:var(--card-2);
+  color:var(--text);
+  font-family:inherit;
+  font-size:17px;
+  font-weight:700;
+  text-align:center;
+  margin-bottom:16px;
+  outline:none;
+}
+.guess-input:focus{border-color:var(--accent);}
+
+.summary-box{
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px 20px;
+  margin-bottom:22px;
+}
+.summary-row{display:flex; justify-content:space-between; font-size:13.5px; padding:7px 0; border-bottom:1px dashed var(--border);}
+.summary-row:last-child{border-bottom:none;}
+.summary-row .k{color:var(--text-faint);}
+.summary-row .v{color:var(--text); font-weight:700; text-align:right;}
+
+.foot-note{text-align:center; color:var(--text-faint); font-size:12px; margin-top:22px; line-height:1.6;}
+.cat-emoji-big{font-size:44px; margin-bottom:6px; display:block;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   IMPOSTOR — pass & play party hra
+   Herní logika je oddělená od vykreslování (render*).
+   Slovník je v poli WORDS níže — snadno rozšiřitelný.
+   ========================================================= */
+
+/* ---------- 1. SLOVNÍK ---------- */
+var CATEGORY_ORDER = ["Jídlo","Nápoje","Zvířata","Předměty","Domácnost","Povolání","Sport","Doprava","Příroda","Místa","Technologie","Filmy a seriály","Aktivity","Lidé","Minecraft","Ostatní"];
+
+var CATEGORY_EMOJI = {
+  "Jídlo":"🍕","Nápoje":"🥤","Zvířata":"🐾","Předměty":"📦","Domácnost":"🏠",
+  "Povolání":"👷","Sport":"⚽","Doprava":"🚗","Příroda":"🌿","Místa":"📍",
+  "Technologie":"💻","Filmy a seriály":"🎬","Aktivity":"🎨","Lidé":"🧑","Minecraft":"⛏️","Ostatní":"✨"
+};
+
+var WORDS = [
+  // Jídlo
+  {word:"Pizza",category:"Jídlo",hint:"kulatá"},
+  {word:"Knedlík",category:"Jídlo",hint:"příloha"},
+  {word:"Guláš",category:"Jídlo",hint:"hovězí"},
+  {word:"Svíčková",category:"Jídlo",hint:"nedělní"},
+  {word:"Řízek",category:"Jídlo",hint:"smažený"},
+  {word:"Bramborák",category:"Jídlo",hint:"bramborový"},
+  {word:"Koláč",category:"Jídlo",hint:"tvarohový"},
+  {word:"Palačinka",category:"Jídlo",hint:"tenká"},
+  {word:"Chleba",category:"Jídlo",hint:"krajíc"},
+  {word:"Sýr",category:"Jídlo",hint:"mléčný"},
+  {word:"Šunka",category:"Jídlo",hint:"uzená"},
+  {word:"Salám",category:"Jídlo",hint:"uzenina"},
+  {word:"Polévka",category:"Jídlo",hint:"teplá"},
+  {word:"Salát",category:"Jídlo",hint:"lehký"},
+  {word:"Zmrzlina",category:"Jídlo",hint:"studená"},
+  {word:"Čokoláda",category:"Jídlo",hint:"sladká"},
+  {word:"Rohlík",category:"Jídlo",hint:"snídaňový"},
+  {word:"Buchta",category:"Jídlo",hint:"povidlová"},
+  {word:"Dort",category:"Jídlo",hint:"svíčky"},
+  {word:"Vejce",category:"Jídlo",hint:"slepičí"},
+  // Nápoje
+  {word:"Pivo",category:"Nápoje",hint:"pěna"},
+  {word:"Víno",category:"Nápoje",hint:"hrozny"},
+  {word:"Voda",category:"Nápoje",hint:"čirá"},
+  {word:"Káva",category:"Nápoje",hint:"ranní"},
+  {word:"Čaj",category:"Nápoje",hint:"bylinný"},
+  {word:"Limonáda",category:"Nápoje",hint:"sycená"},
+  {word:"Mléko",category:"Nápoje",hint:"bílé"},
+  {word:"Rum",category:"Nápoje",hint:"tvrdý"},
+  {word:"Vodka",category:"Nápoje",hint:"čirý"},
+  {word:"Slivovice",category:"Nápoje",hint:"pálenka"},
+  {word:"Kofola",category:"Nápoje",hint:"tmavá"},
+  {word:"Džus",category:"Nápoje",hint:"ovocný"},
+  {word:"Burčák",category:"Nápoje",hint:"podzimní"},
+  {word:"Grog",category:"Nápoje",hint:"horký"},
+  {word:"Sekt",category:"Nápoje",hint:"šumivý"},
+  {word:"Mošt",category:"Nápoje",hint:"jablečný"},
+  {word:"Sirup",category:"Nápoje",hint:"hustý"},
+  {word:"Kakao",category:"Nápoje",hint:"dětský"},
+  {word:"Medovina",category:"Nápoje",hint:"medová"},
+  {word:"Fanta",category:"Nápoje",hint:"oranžová"},
+  // Zvířata
+  {word:"Pes",category:"Zvířata",hint:"štěká"},
+  {word:"Kočka",category:"Zvířata",hint:"přede"},
+  {word:"Kůň",category:"Zvířata",hint:"kopyta"},
+  {word:"Slon",category:"Zvířata",hint:"chobot"},
+  {word:"Žirafa",category:"Zvířata",hint:"krk"},
+  {word:"Lev",category:"Zvířata",hint:"hříva"},
+  {word:"Tygr",category:"Zvířata",hint:"pruhy"},
+  {word:"Medvěd",category:"Zvířata",hint:"srst"},
+  {word:"Vlk",category:"Zvířata",hint:"smečka"},
+  {word:"Liška",category:"Zvířata",hint:"mazaná"},
+  {word:"Zajíc",category:"Zvířata",hint:"uši"},
+  {word:"Veverka",category:"Zvířata",hint:"oříšky"},
+  {word:"Ryba",category:"Zvířata",hint:"žábry"},
+  {word:"Žralok",category:"Zvířata",hint:"zuby"},
+  {word:"Delfín",category:"Zvířata",hint:"moře"},
+  {word:"Papoušek",category:"Zvířata",hint:"peří"},
+  {word:"Orel",category:"Zvířata",hint:"dravec"},
+  {word:"Sova",category:"Zvířata",hint:"houká"},
+  {word:"Had",category:"Zvířata",hint:"plazí"},
+  {word:"Pavouk",category:"Zvířata",hint:"síť"},
+  // Předměty
+  {word:"Židle",category:"Předměty",hint:"sezení"},
+  {word:"Stůl",category:"Předměty",hint:"nábytek"},
+  {word:"Kniha",category:"Předměty",hint:"stránky"},
+  {word:"Tužka",category:"Předměty",hint:"psaní"},
+  {word:"Telefon",category:"Předměty",hint:"volání"},
+  {word:"Klíč",category:"Předměty",hint:"zámek"},
+  {word:"Hodinky",category:"Předměty",hint:"zápěstí"},
+  {word:"Brýle",category:"Předměty",hint:"oči"},
+  {word:"Deštník",category:"Předměty",hint:"déšť"},
+  {word:"Kufr",category:"Předměty",hint:"cestování"},
+  {word:"Zrcadlo",category:"Předměty",hint:"odraz"},
+  {word:"Svíčka",category:"Předměty",hint:"plamen"},
+  {word:"Nůž",category:"Předměty",hint:"ostrý"},
+  {word:"Vidlička",category:"Předměty",hint:"příbor"},
+  {word:"Talíř",category:"Předměty",hint:"kulatý"},
+  {word:"Hrnek",category:"Předměty",hint:"nápoj"},
+  {word:"Polštář",category:"Předměty",hint:"měkký"},
+  {word:"Deka",category:"Předměty",hint:"teplá"},
+  {word:"Kabelka",category:"Předměty",hint:"nošení"},
+  {word:"Baterka",category:"Předměty",hint:"svítí"},
+  // Domácnost
+  {word:"Vysavač",category:"Domácnost",hint:"prach"},
+  {word:"Lednička",category:"Domácnost",hint:"chladí"},
+  {word:"Pračka",category:"Domácnost",hint:"prádlo"},
+  {word:"Myčka",category:"Domácnost",hint:"nádobí"},
+  {word:"Trouba",category:"Domácnost",hint:"pečení"},
+  {word:"Mikrovlnka",category:"Domácnost",hint:"ohřev"},
+  {word:"Žehlička",category:"Domácnost",hint:"hladí"},
+  {word:"Koště",category:"Domácnost",hint:"zametá"},
+  {word:"Ubrousek",category:"Domácnost",hint:"papírový"},
+  {word:"Ručník",category:"Domácnost",hint:"koupelna"},
+  {word:"Peřina",category:"Domácnost",hint:"postel"},
+  {word:"Skříň",category:"Domácnost",hint:"oblečení"},
+  {word:"Postel",category:"Domácnost",hint:"spánek"},
+  {word:"Koberec",category:"Domácnost",hint:"podlaha"},
+  {word:"Lampa",category:"Domácnost",hint:"svítí"},
+  {word:"Záclona",category:"Domácnost",hint:"okno"},
+  {word:"Umyvadlo",category:"Domácnost",hint:"kohoutek"},
+  {word:"Sprcha",category:"Domácnost",hint:"proud"},
+  {word:"Vana",category:"Domácnost",hint:"koupel"},
+  {word:"Dveře",category:"Domácnost",hint:"vstup"},
+  // Povolání
+  {word:"Lékař",category:"Povolání",hint:"nemocnice"},
+  {word:"Učitel",category:"Povolání",hint:"škola"},
+  {word:"Policista",category:"Povolání",hint:"uniforma"},
+  {word:"Hasič",category:"Povolání",hint:"požár"},
+  {word:"Kuchař",category:"Povolání",hint:"vaří"},
+  {word:"Řidič",category:"Povolání",hint:"volant"},
+  {word:"Prodavač",category:"Povolání",hint:"obchod"},
+  {word:"Zedník",category:"Povolání",hint:"cihly"},
+  {word:"Elektrikář",category:"Povolání",hint:"elektřina"},
+  {word:"Instalatér",category:"Povolání",hint:"potrubí"},
+  {word:"Právník",category:"Povolání",hint:"soud"},
+  {word:"Účetní",category:"Povolání",hint:"čísla"},
+  {word:"Novinář",category:"Povolání",hint:"zprávy"},
+  {word:"Fotograf",category:"Povolání",hint:"fotí"},
+  {word:"Herec",category:"Povolání",hint:"role"},
+  {word:"Zpěvák",category:"Povolání",hint:"pódium"},
+  {word:"Malíř",category:"Povolání",hint:"štětec"},
+  {word:"Pilot",category:"Povolání",hint:"letadlo"},
+  {word:"Voják",category:"Povolání",hint:"armáda"},
+  {word:"Zubař",category:"Povolání",hint:"zuby"},
+  // Sport
+  {word:"Fotbal",category:"Sport",hint:"branka"},
+  {word:"Hokej",category:"Sport",hint:"led"},
+  {word:"Tenis",category:"Sport",hint:"raketa"},
+  {word:"Basketbal",category:"Sport",hint:"koš"},
+  {word:"Volejbal",category:"Sport",hint:"síť"},
+  {word:"Plavání",category:"Sport",hint:"bazén"},
+  {word:"Běh",category:"Sport",hint:"rychlost"},
+  {word:"Lyžování",category:"Sport",hint:"sníh"},
+  {word:"Cyklistika",category:"Sport",hint:"kolo"},
+  {word:"Box",category:"Sport",hint:"pěsti"},
+  {word:"Golf",category:"Sport",hint:"jamka"},
+  {word:"Ragby",category:"Sport",hint:"kontaktní"},
+  {word:"Badminton",category:"Sport",hint:"košíček"},
+  {word:"Squash",category:"Sport",hint:"stěna"},
+  {word:"Judo",category:"Sport",hint:"hod"},
+  {word:"Šachy",category:"Sport",hint:"figurky"},
+  {word:"Kuželky",category:"Sport",hint:"koule"},
+  {word:"Atletika",category:"Sport",hint:"stadion"},
+  {word:"Gymnastika",category:"Sport",hint:"ohebnost"},
+  {word:"Surfing",category:"Sport",hint:"vlny"},
+  // Doprava
+  {word:"Auto",category:"Doprava",hint:"silnice"},
+  {word:"Autobus",category:"Doprava",hint:"cestující"},
+  {word:"Vlak",category:"Doprava",hint:"koleje"},
+  {word:"Letadlo",category:"Doprava",hint:"vzduch"},
+  {word:"Loď",category:"Doprava",hint:"voda"},
+  {word:"Kolo",category:"Doprava",hint:"pedály"},
+  {word:"Motorka",category:"Doprava",hint:"dvoukolá"},
+  {word:"Tramvaj",category:"Doprava",hint:"kolejová"},
+  {word:"Metro",category:"Doprava",hint:"podzemní"},
+  {word:"Taxi",category:"Doprava",hint:"objednávka"},
+  {word:"Koloběžka",category:"Doprava",hint:"odraz"},
+  {word:"Výtah",category:"Doprava",hint:"budova"},
+  {word:"Lanovka",category:"Doprava",hint:"hory"},
+  {word:"Trolejbus",category:"Doprava",hint:"dráty"},
+  {word:"Traktor",category:"Doprava",hint:"pole"},
+  {word:"Náklaďák",category:"Doprava",hint:"náklad"},
+  {word:"Vrtulník",category:"Doprava",hint:"vrtule"},
+  {word:"Raketa",category:"Doprava",hint:"vesmír"},
+  {word:"Balon",category:"Doprava",hint:"vzduchem"},
+  {word:"Kajak",category:"Doprava",hint:"veslo"},
+  // Příroda
+  {word:"Strom",category:"Příroda",hint:"listy"},
+  {word:"Hora",category:"Příroda",hint:"vrchol"},
+  {word:"Řeka",category:"Příroda",hint:"tekoucí"},
+  {word:"Moře",category:"Příroda",hint:"slané"},
+  {word:"Les",category:"Příroda",hint:"stromy"},
+  {word:"Louka",category:"Příroda",hint:"tráva"},
+  {word:"Poušť",category:"Příroda",hint:"písek"},
+  {word:"Jeskyně",category:"Příroda",hint:"podzemní"},
+  {word:"Vodopád",category:"Příroda",hint:"výška"},
+  {word:"Ostrov",category:"Příroda",hint:"obklopený"},
+  {word:"Sopka",category:"Příroda",hint:"láva"},
+  {word:"Ledovec",category:"Příroda",hint:"led"},
+  {word:"Duha",category:"Příroda",hint:"barevná"},
+  {word:"Blesk",category:"Příroda",hint:"bouřka"},
+  {word:"Mrak",category:"Příroda",hint:"obloha"},
+  {word:"Sníh",category:"Příroda",hint:"bílý"},
+  {word:"Déšť",category:"Příroda",hint:"kapky"},
+  {word:"Slunce",category:"Příroda",hint:"teplo"},
+  {word:"Měsíc",category:"Příroda",hint:"noc"},
+  {word:"Hvězda",category:"Příroda",hint:"svit"},
+  // Místa
+  {word:"Škola",category:"Místa",hint:"učení"},
+  {word:"Nemocnice",category:"Místa",hint:"pacienti"},
+  {word:"Restaurace",category:"Místa",hint:"jídlo"},
+  {word:"Hřbitov",category:"Místa",hint:"hroby"},
+  {word:"Kostel",category:"Místa",hint:"modlitba"},
+  {word:"Hrad",category:"Místa",hint:"středověký"},
+  {word:"Zámek",category:"Místa",hint:"honosný"},
+  {word:"Muzeum",category:"Místa",hint:"exponáty"},
+  {word:"Divadlo",category:"Místa",hint:"jeviště"},
+  {word:"Kino",category:"Místa",hint:"plátno"},
+  {word:"Knihovna",category:"Místa",hint:"knihy"},
+  {word:"Stadion",category:"Místa",hint:"zápas"},
+  {word:"Letiště",category:"Místa",hint:"odlety"},
+  {word:"Nádraží",category:"Místa",hint:"vlaky"},
+  {word:"Trh",category:"Místa",hint:"prodej"},
+  {word:"Park",category:"Místa",hint:"procházka"},
+  {word:"Zoo",category:"Místa",hint:"zvířata"},
+  {word:"Pláž",category:"Místa",hint:"písek"},
+  {word:"Kancelář",category:"Místa",hint:"práce"},
+  {word:"Věznice",category:"Místa",hint:"vězni"},
+  // Technologie
+  {word:"Počítač",category:"Technologie",hint:"obrazovka"},
+  {word:"Notebook",category:"Technologie",hint:"přenosný"},
+  {word:"Tablet",category:"Technologie",hint:"dotykový"},
+  {word:"Chytré hodinky",category:"Technologie",hint:"kroky"},
+  {word:"Sluchátka",category:"Technologie",hint:"hudba"},
+  {word:"Klávesnice",category:"Technologie",hint:"psaní"},
+  {word:"Myš",category:"Technologie",hint:"kurzor"},
+  {word:"Tiskárna",category:"Technologie",hint:"papír"},
+  {word:"Router",category:"Technologie",hint:"internet"},
+  {word:"Fotoaparát",category:"Technologie",hint:"snímek"},
+  {word:"Dron",category:"Technologie",hint:"létání"},
+  {word:"Robot",category:"Technologie",hint:"automat"},
+  {word:"Reproduktor",category:"Technologie",hint:"zvuk"},
+  {word:"Nabíječka",category:"Technologie",hint:"baterie"},
+  {word:"Powerbanka",category:"Technologie",hint:"přenosná"},
+  {word:"Monitor",category:"Technologie",hint:"obraz"},
+  {word:"Herní konzole",category:"Technologie",hint:"hry"},
+  {word:"Mikrofon",category:"Technologie",hint:"hlas"},
+  {word:"Projektor",category:"Technologie",hint:"promítání"},
+  {word:"Čtečka",category:"Technologie",hint:"knihy"},
+  // Filmy a seriály
+  {word:"Titanic",category:"Filmy a seriály",hint:"potopení"},
+  {word:"Avatar",category:"Filmy a seriály",hint:"mimozemské"},
+  {word:"Matrix",category:"Filmy a seriály",hint:"simulace"},
+  {word:"Simpsonovi",category:"Filmy a seriály",hint:"animovaný"},
+  {word:"Přátelé",category:"Filmy a seriály",hint:"seriál"},
+  {word:"Harry Potter",category:"Filmy a seriály",hint:"kouzelník"},
+  {word:"Star Wars",category:"Filmy a seriály",hint:"vesmírné"},
+  {word:"Shrek",category:"Filmy a seriály",hint:"animák"},
+  {word:"Frozen",category:"Filmy a seriály",hint:"led"},
+  {word:"Batman",category:"Filmy a seriály",hint:"superhrdina"},
+  {word:"Spider-Man",category:"Filmy a seriály",hint:"pavučina"},
+  {word:"Vikingové",category:"Filmy a seriály",hint:"bojovníci"},
+  {word:"Trůny",category:"Filmy a seriály",hint:"fantasy"},
+  {word:"Stranger Things",category:"Filmy a seriály",hint:"záhady"},
+  {word:"Rychle a zběsile",category:"Filmy a seriály",hint:"auta"},
+  {word:"Rocky",category:"Filmy a seriály",hint:"boxer"},
+  {word:"Piráti z Karibiku",category:"Filmy a seriály",hint:"dobrodružství"},
+  {word:"Jumanji",category:"Filmy a seriály",hint:"hra"},
+  {word:"Král lvů",category:"Filmy a seriály",hint:"savana"},
+  {word:"Twilight",category:"Filmy a seriály",hint:"upíři"},
+  // Aktivity
+  {word:"Tanec",category:"Aktivity",hint:"rytmus"},
+  {word:"Zpěv",category:"Aktivity",hint:"hlas"},
+  {word:"Malování",category:"Aktivity",hint:"barvy"},
+  {word:"Vaření",category:"Aktivity",hint:"kuchyně"},
+  {word:"Čtení",category:"Aktivity",hint:"kniha"},
+  {word:"Turistika",category:"Aktivity",hint:"příroda"},
+  {word:"Rybaření",category:"Aktivity",hint:"udice"},
+  {word:"Zahradničení",category:"Aktivity",hint:"rostliny"},
+  {word:"Fotografování",category:"Aktivity",hint:"fotoaparát"},
+  {word:"Nakupování",category:"Aktivity",hint:"obchody"},
+  {word:"Spaní",category:"Aktivity",hint:"odpočinek"},
+  {word:"Cestování",category:"Aktivity",hint:"poznávání"},
+  {word:"Meditace",category:"Aktivity",hint:"klid"},
+  {word:"Jóga",category:"Aktivity",hint:"protahování"},
+  {word:"Hraní her",category:"Aktivity",hint:"zábava"},
+  {word:"Psaní",category:"Aktivity",hint:"text"},
+  {word:"Šití",category:"Aktivity",hint:"jehla"},
+  {word:"Pletení",category:"Aktivity",hint:"vlna"},
+  {word:"Skládání puzzle",category:"Aktivity",hint:"dílky"},
+  {word:"Karaoke",category:"Aktivity",hint:"zpívání"},
+  // Lidé
+  {word:"Miminko",category:"Lidé",hint:"kojenec"},
+  {word:"Dítě",category:"Lidé",hint:"školák"},
+  {word:"Teenager",category:"Lidé",hint:"dospívání"},
+  {word:"Dědeček",category:"Lidé",hint:"vnoučata"},
+  {word:"Babička",category:"Lidé",hint:"koláčky"},
+  {word:"Doktor",category:"Lidé",hint:"vyšetření"},
+  {word:"Sourozenec",category:"Lidé",hint:"rodina"},
+  {word:"Kamarád",category:"Lidé",hint:"přátelství"},
+  {word:"Soused",category:"Lidé",hint:"vedle"},
+  {word:"Cizinec",category:"Lidé",hint:"neznámý"},
+  {word:"Snoubenka",category:"Lidé",hint:"zásnuby"},
+  {word:"Manžel",category:"Lidé",hint:"manželství"},
+  {word:"Dvojče",category:"Lidé",hint:"podobný"},
+  {word:"Blondýna",category:"Lidé",hint:"vlasy"},
+  {word:"Fanoušek",category:"Lidé",hint:"podpora"},
+  {word:"Turista",category:"Lidé",hint:"průvodce"},
+  {word:"Hrdina",category:"Lidé",hint:"záchrana"},
+  {word:"Zloděj",category:"Lidé",hint:"krádež"},
+  {word:"Klaun",category:"Lidé",hint:"cirkus"},
+  {word:"Přítelkyně",category:"Lidé",hint:"vztah"},
+  // Ostatní
+  {word:"Hudba",category:"Ostatní",hint:"tóny"},
+  {word:"Sen",category:"Ostatní",hint:"spánek"},
+  {word:"Láska",category:"Ostatní",hint:"cit"},
+  {word:"Štěstí",category:"Ostatní",hint:"radost"},
+  {word:"Peníze",category:"Ostatní",hint:"platba"},
+  {word:"Čas",category:"Ostatní",hint:"hodiny"},
+  {word:"Narozeniny",category:"Ostatní",hint:"dárky"},
+  {word:"Vánoce",category:"Ostatní",hint:"stromeček"},
+  {word:"Velikonoce",category:"Ostatní",hint:"pomlázka"},
+  {word:"Svatba",category:"Ostatní",hint:"obřad"},
+  {word:"Dovolená",category:"Ostatní",hint:"odpočinek"},
+  {word:"Prázdniny",category:"Ostatní",hint:"volno"},
+  {word:"Překvapení",category:"Ostatní",hint:"neočekávané"},
+  {word:"Tajemství",category:"Ostatní",hint:"skryté"},
+  {word:"Vtip",category:"Ostatní",hint:"smích"},
+  {word:"Hádanka",category:"Ostatní",hint:"otázka"},
+  {word:"Kouzlo",category:"Ostatní",hint:"magie"},
+  {word:"Přátelství",category:"Ostatní",hint:"pouto"},
+  {word:"Rodina",category:"Ostatní",hint:"příbuzní"},
+  {word:"Nuda",category:"Ostatní",hint:"nic"},
+  // Minecraft
+  {word:"Creeper",category:"Minecraft",hint:"výbuch"},
+  {word:"Zombie",category:"Minecraft",hint:"nemrtvý"},
+  {word:"Kostlivec",category:"Minecraft",hint:"luk"},
+  {word:"Enderman",category:"Minecraft",hint:"teleport"},
+  {word:"Diamant",category:"Minecraft",hint:"vzácný"},
+  {word:"Blok",category:"Minecraft",hint:"čtvercový"},
+  {word:"Krumpáč",category:"Minecraft",hint:"těžba"},
+  {word:"Meč",category:"Minecraft",hint:"boj"},
+  {word:"Láva",category:"Minecraft",hint:"horká"},
+  {word:"Redstone",category:"Minecraft",hint:"obvod"},
+  {word:"Ender Dragon",category:"Minecraft",hint:"boss"},
+  {word:"Wither",category:"Minecraft",hint:"lebky"},
+  {word:"Vesničan",category:"Minecraft",hint:"obchod"},
+  {word:"Piglin",category:"Minecraft",hint:"nether"},
+  {word:"Železný golem",category:"Minecraft",hint:"ochránce"},
+  {word:"TNT",category:"Minecraft",hint:"výbušnina"},
+  {word:"Nether portál",category:"Minecraft",hint:"obsidián"},
+  {word:"Obsidián",category:"Minecraft",hint:"černý"},
+  {word:"Craftovací stůl",category:"Minecraft",hint:"výroba"},
+  {word:"Kreativní režim",category:"Minecraft",hint:"létání"}
+];
+
+/* ---------- 2. STAV APLIKACE ---------- */
+var nextPlayerId = 4;
+var state = {
+  screen: 'home',
+  prevScreen: 'home',
+  players: [
+    {id:1, name:'Hráč 1'},
+    {id:2, name:'Hráč 2'},
+    {id:3, name:'Hráč 3'}
+  ],
+  settings: {
+    impostorCount: 1,
+    categories: CATEGORY_ORDER.slice(),
+    impostorInfo: 'none',
+    randomOrder: true,
+    discussionTimer: 0,
+    lastChance: true
+  },
+  usedWords: {},
+  round: null,
+  stats: {},
+  knownPlayers: [],
+  ui: { showImport:false, importValue:'', backupMsg:'' }
+};
+
+/* ---------- 3. POMOCNÉ FUNKCE ---------- */
+function shuffle(arr){
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+  }
+  return a;
+}
+function getPlayerName(id){
+  for(var i=0;i<state.players.length;i++){ if(state.players[i].id===id) return state.players[i].name; }
+  return '';
+}
+function initials(name){
+  var t = (name||'?').trim();
+  return t.length ? t.charAt(0).toUpperCase() : '?';
+}
+function pickWord(){
+  var cats = (state.settings.categories && state.settings.categories.length) ? state.settings.categories : CATEGORY_ORDER;
+  var pool = WORDS.filter(function(w){ return cats.indexOf(w.category)!==-1; });
+  var fresh = pool.filter(function(w){ return !state.usedWords[w.word]; });
+  var finalPool = fresh.length ? fresh : pool;
+  var choice = finalPool[Math.floor(Math.random()*finalPool.length)];
+  state.usedWords[choice.word] = true;
+  return choice;
+}
+function pickImpostors(){
+  var ids = shuffle(state.players.map(function(p){return p.id;}));
+  return ids.slice(0, state.settings.impostorCount);
+}
+function stopDiscussionTimer(){
+  if(state.round && state.round.timerId){
+    clearInterval(state.round.timerId);
+    state.round.timerId = null;
+  }
+}
+
+/* ---------- 3b. ULOŽENÍ (localStorage) ---------- */
+function safeGet(key){
+  try{ var v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+  catch(e){ return null; }
+}
+function safeSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }
+  catch(e){ /* úložiště nedostupné (např. soukromý režim) - tiše ignorujeme */ }
+}
+function saveStats(){ safeSet('impostor_stats_v1', state.stats); }
+function saveKnownPlayers(){ safeSet('impostor_known_players_v1', state.knownPlayers); }
+function statKey(name){ return (name||'').trim() || 'Hráč'; }
+function ensureStat(key){
+  if(!state.stats[key]){
+    state.stats[key] = {gamesPlayed:0, timesImpostor:0, winsAsImpostor:0, winsAsCrew:0, correctVotes:0};
+  }
+}
+function rememberKnownPlayers(){
+  var isDefault = /^Hráč \d+$/;
+  state.players.forEach(function(p){
+    var name = (p.name||'').trim();
+    if(!name || isDefault.test(name)) return;
+    var idx = state.knownPlayers.indexOf(name);
+    if(idx!==-1) state.knownPlayers.splice(idx,1);
+    state.knownPlayers.unshift(name);
+  });
+  state.knownPlayers = state.knownPlayers.slice(0,20);
+  saveKnownPlayers();
+}
+function recordRoundStart(){
+  state.players.forEach(function(p){
+    var key = statKey(p.name);
+    ensureStat(key);
+    state.stats[key].gamesPlayed++;
+    if(state.round.impostorIds.indexOf(p.id)!==-1) state.stats[key].timesImpostor++;
+  });
+  saveStats();
+}
+function recordVoteStats(){
+  var r = state.round;
+  Object.keys(r.votes).forEach(function(voterIdStr){
+    var voterId = Number(voterIdStr);
+    var voter = state.players.find(function(p){return p.id===voterId;});
+    if(!voter) return;
+    var target = r.votes[voterIdStr];
+    if(r.impostorIds.indexOf(target)!==-1){
+      var key = statKey(voter.name);
+      ensureStat(key);
+      state.stats[key].correctVotes++;
+    }
+  });
+  saveStats();
+}
+function recordOutcome(outcome){
+  var r = state.round;
+  state.players.forEach(function(p){
+    var key = statKey(p.name);
+    ensureStat(key);
+    var isImp = r.impostorIds.indexOf(p.id)!==-1;
+    if(isImp && outcome==='impostor') state.stats[key].winsAsImpostor++;
+    if(!isImp && outcome==='crew') state.stats[key].winsAsCrew++;
+  });
+  saveStats();
+}
+function clearStats(){
+  if(confirm('Opravdu chceš smazat všechny statistiky? Tuto akci nelze vrátit zpět.')){
+    state.stats = {};
+    saveStats();
+    render();
+  }
+}
+function requestPersistentStorage(){
+  try{
+    if(navigator.storage && navigator.storage.persist){ navigator.storage.persist(); }
+  }catch(e){ /* nedostupné - v pořádku, jde jen o best-effort pokus */ }
+}
+
+/* ---------- 3c. ZÁLOHA / OBNOVA STATISTIK ---------- */
+function utf8ToB64(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64ToUtf8(str){ return decodeURIComponent(escape(atob(str))); }
+function generateBackupCode(){
+  return utf8ToB64(JSON.stringify({v:1, stats:state.stats, knownPlayers:state.knownPlayers}));
+}
+function doBackupExport(){
+  var code = generateBackupCode();
+  state.ui.backupMsg = '';
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(function(){
+      state.ui.backupMsg = 'Kód zálohy zkopírován do schránky ✅ Ulož si ho (např. do poznámek).';
+      render();
+    }).catch(function(){
+      state.ui.backupMsg = 'Nešlo zkopírovat automaticky. Kód zálohy:\n' + code;
+      render();
+    });
+  } else {
+    state.ui.backupMsg = 'Kód zálohy:\n' + code;
+    render();
+  }
+}
+function toggleImportUi(){
+  state.ui.showImport = !state.ui.showImport;
+  state.ui.backupMsg = '';
+  render();
+}
+function handleImportInput(v){ state.ui.importValue = v; }
+function doBackupImport(){
+  var raw = (state.ui.importValue||'').trim();
+  var obj = null;
+  try{ obj = JSON.parse(b64ToUtf8(raw)); }catch(e){ obj = null; }
+  if(!obj || typeof obj.stats!=='object'){
+    state.ui.backupMsg = 'Neplatný kód zálohy ❌';
+    render();
+    return;
+  }
+  state.stats = obj.stats || {};
+  state.knownPlayers = obj.knownPlayers || [];
+  saveStats();
+  saveKnownPlayers();
+  state.ui.showImport = false;
+  state.ui.importValue = '';
+  state.ui.backupMsg = 'Statistiky obnoveny ✅';
+  render();
+}
+
+/* ---------- 4. HERNÍ TOKY ---------- */
+function goHome(){ stopDiscussionTimer(); state.screen='home'; render(); }
+function goToStats(){ state.screen='stats'; render(); }
+function goRules(){ state.prevScreen = state.screen; state.screen='rules'; render(); }
+function backFromRules(){ state.screen = state.prevScreen==='rules' ? 'home' : state.prevScreen; render(); }
+
+function startNewGameSetup(){
+  state.usedWords = {};
+  state.screen = 'settings';
+  render();
+}
+function goToPlayers(){ state.screen='players'; render(); }
+function backToSettings(){ state.screen='settings'; render(); }
+function backToHomeFromSettings(){ state.screen='home'; render(); }
+
+function addPlayer(){
+  if(state.players.length>=12) return;
+  nextPlayerId++;
+  state.players.push({id:nextPlayerId, name:'Hráč '+(state.players.length+1)});
+  render();
+}
+function removePlayer(id){
+  if(state.players.length<=3) return;
+  state.players = state.players.filter(function(p){return p.id!==id;});
+  render();
+}
+function handlePlayerNameInput(id, value){
+  var p = state.players.find(function(p){return p.id===id;});
+  if(p) p.name = value;
+}
+
+function canStartGame(){
+  return state.players.length>=3 && state.settings.impostorCount < state.players.length;
+}
+function startGame(){
+  if(!canStartGame()) return;
+  startNewRound();
+}
+function startNewRound(){
+  var wordObj = pickWord();
+  var impostorIds = pickImpostors();
+  var revealOrder = state.players.map(function(p){return p.id;});
+  var hintOrder = state.settings.randomOrder ? shuffle(revealOrder) : revealOrder.slice();
+  state.round = {
+    wordObj: wordObj,
+    impostorIds: impostorIds,
+    revealOrder: revealOrder,
+    revealIndex: 0,
+    revealPhase: 'ready',
+    hintOrder: hintOrder,
+    hintIndex: 0,
+    discussionTimeLeft: state.settings.discussionTimer,
+    timerId: null,
+    voteOrder: revealOrder.slice(),
+    voteIndex: 0,
+    votePhase: 'ready',
+    votes: {},
+    accusedId: null,
+    tie: false,
+    accusedIsImpostor: false,
+    guess: ''
+  };
+  state.screen = 'roleReveal';
+  recordRoundStart();
+  rememberKnownPlayers();
+  render();
+}
+
+function revealRole(){ state.round.revealPhase='shown'; render(); }
+function hideRole(){
+  var r = state.round;
+  if(r.revealIndex >= r.revealOrder.length-1){
+    state.screen = 'hintIntro';
+  } else {
+    r.revealIndex++;
+    r.revealPhase = 'ready';
+  }
+  render();
+}
+
+function beginHintRound(){ state.screen='hintRound'; state.round.hintIndex=0; render(); }
+function nextHintPlayer(){
+  var r = state.round;
+  if(r.hintIndex >= r.hintOrder.length-1){
+    state.screen='discussion';
+    render();
+    startDiscussionTimerIfNeeded();
+  } else {
+    r.hintIndex++;
+    render();
+  }
+}
+
+function startDiscussionTimerIfNeeded(){
+  var r = state.round;
+  if(state.settings.discussionTimer>0 && !r.timerId){
+    r.timerId = setInterval(function(){
+      r.discussionTimeLeft--;
+      if(r.discussionTimeLeft<=0){
+        r.discussionTimeLeft = 0;
+        stopDiscussionTimer();
+      }
+      updateTimerUI();
+    },1000);
+  }
+}
+function updateTimerUI(){
+  var ring = document.getElementById('timerRing');
+  var txt = document.getElementById('timerText');
+  if(!ring||!txt) return;
+  var r = state.round;
+  var total = state.settings.discussionTimer;
+  var pct = total>0 ? Math.round((r.discussionTimeLeft/total)*100) : 0;
+  ring.style.setProperty('--pct', pct);
+  var m = Math.floor(r.discussionTimeLeft/60), s = r.discussionTimeLeft%60;
+  txt.textContent = m+':'+(s<10?'0':'')+s;
+  if(r.discussionTimeLeft<=0){
+    txt.textContent = 'Čas!';
+  }
+}
+
+function goToVoteIntro(){ stopDiscussionTimer(); state.screen='voteIntro'; render(); }
+function beginVoting(){ state.screen='voting'; state.round.voteIndex=0; state.round.votePhase='ready'; render(); }
+function showVoteOptions(){ state.round.votePhase='choosing'; render(); }
+function castVote(targetId){
+  var r = state.round;
+  var voterId = r.voteOrder[r.voteIndex];
+  r.votes[voterId] = targetId;
+  r.votePhase = 'confirmed';
+  render();
+}
+function nextVoter(){
+  var r = state.round;
+  if(r.voteIndex >= r.voteOrder.length-1){
+    computeResults();
+    recordVoteStats();
+    state.screen='results';
+  } else {
+    r.voteIndex++;
+    r.votePhase='ready';
+  }
+  render();
+}
+function computeResults(){
+  var r = state.round;
+  var counts = {};
+  state.players.forEach(function(p){ counts[p.id]=0; });
+  Object.keys(r.votes).forEach(function(voterId){
+    var target = r.votes[voterId];
+    counts[target] = (counts[target]||0)+1;
+  });
+  r.voteCounts = counts;
+  var max = -1;
+  Object.keys(counts).forEach(function(id){ if(counts[id]>max) max=counts[id]; });
+  var top = Object.keys(counts).filter(function(id){ return counts[id]===max; }).map(Number);
+  if(max===0 || top.length>1){
+    r.tie = true;
+    r.accusedId = null;
+  } else {
+    r.tie = false;
+    r.accusedId = top[0];
+    r.accusedIsImpostor = r.impostorIds.indexOf(r.accusedId)!==-1;
+  }
+}
+
+function afterResults(){
+  var r = state.round;
+  if(!r.tie && r.accusedIsImpostor && state.settings.lastChance){
+    state.screen = 'impostorGuess';
+  } else {
+    var outcome = (r.tie || !r.accusedIsImpostor) ? 'impostor' : 'crew';
+    recordOutcome(outcome);
+    state.screen = 'gameEnd';
+  }
+  render();
+}
+function handleGuessInput(v){ state.round.guess = v; }
+function submitGuess(){
+  var r = state.round;
+  var norm = function(s){ return (s||'').trim().toLowerCase(); };
+  r.guessCorrect = norm(r.guess) === norm(r.wordObj.word);
+  r.guessSubmitted = true;
+  recordOutcome(r.guessCorrect ? 'impostor' : 'crew');
+  render();
+}
+function finishGuess(){ state.screen='gameEnd'; render(); }
+
+function nextRound(){ startNewRound(); }
+function newGameFromEnd(){ startNewGameSetup(); }
+
+/* ---------- 5. RENDER ---------- */
+function render(){
+  var app = document.getElementById('app');
+  var html = '';
+  switch(state.screen){
+    case 'home': html = renderHome(); break;
+    case 'rules': html = renderRules(); break;
+    case 'stats': html = renderStats(); break;
+    case 'settings': html = renderSettings(); break;
+    case 'players': html = renderPlayers(); break;
+    case 'roleReveal': html = renderRoleReveal(); break;
+    case 'hintIntro': html = renderHintIntro(); break;
+    case 'hintRound': html = renderHintRound(); break;
+    case 'discussion': html = renderDiscussion(); break;
+    case 'voteIntro': html = renderVoteIntro(); break;
+    case 'voting': html = renderVoting(); break;
+    case 'results': html = renderResults(); break;
+    case 'impostorGuess': html = renderImpostorGuess(); break;
+    case 'gameEnd': html = renderGameEnd(); break;
+    default: html = renderHome();
+  }
+  app.innerHTML = '<div class="wrap">'+html+'</div>';
+  if(state.screen==='discussion') { startDiscussionTimerIfNeeded(); updateTimerUI(); }
+}
+
+function renderHome(){
+  return '' +
+  '<div class="screen">' +
+    '<div class="mask-row">🎭🕵️‍♂️🤫</div>' +
+    '<h1 class="logo title-font">IMPOSTOR</h1>' +
+    '<p class="subtitle">Dokážeš se neprozradit?</p>' +
+    '<div class="card">' +
+      '<button class="btn btn-primary" onclick="startNewGameSetup()">NOVÁ HRA</button>' +
+      '<button class="btn btn-secondary" onclick="goRules()">PRAVIDLA</button>' +
+      '<button class="btn btn-ghost" onclick="goToStats()">STATISTIKY</button>' +
+    '</div>' +
+    '<p class="foot-note">Party hra pro '+ '3–12 hráčů na jednom zařízení.<br>Předávejte si telefon a nedívejte se druhým do obrazovky 👀</p>' +
+  '</div>';
+}
+
+function renderRules(){
+  return '' +
+  '<div class="screen">' +
+    '<div class="top-nav"><button class="icon-btn" onclick="backFromRules()">←</button><div class="eyebrow" style="margin:0;">Pravidla</div><div style="width:40px"></div></div>' +
+    '<div class="card">' +
+      '<div class="section-title title-font">Jak se hraje</div>' +
+      '<div class="rules-box">' +
+        '<ol>' +
+          '<li><b>Role:</b> každý hráč dostane tajně svou informaci — buď tajné slovo, nebo roli Impostora.</li>' +
+          '<li><b>Impostor</b> tajné slovo nezná (podle nastavení může dostat kategorii nebo obecnou nápovědu).</li>' +
+          '<li><b>Nápovědy:</b> každý hráč postupně řekne nahlas jedno jediné slovo související s tajným slovem.</li>' +
+          '<li><b>Diskuse:</b> společně proberete, kdo se choval podezřele.</li>' +
+          '<li><b>Hlasování:</b> každý tajně zvolí, koho považuje za Impostora.</li>' +
+          '<li><b>Impostor se snaží přežít</b> — nesmí se prozradit, ale musí odhadnout slovo.</li>' +
+          '<li>Pokud je odhalen, může (podle nastavení) dostat <b>poslední šanci</b> uhodnout tajné slovo a přesto vyhrát.</li>' +
+        '</ol>' +
+      '</div>' +
+      '<button class="btn btn-primary" onclick="backFromRules()">ROZUMÍM</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderStats(){
+  var keys = Object.keys(state.stats);
+  var body;
+  if(keys.length===0){
+    body = '<p class="section-sub" style="text-align:center; margin:18px 0 4px;">Zatím žádná data. Odehraj první kolo a hráči se tu objeví. 🎲</p>';
+  } else {
+    var sorted = keys.slice().sort(function(a,b){
+      var A=state.stats[a], B=state.stats[b];
+      var wa=(A.winsAsImpostor||0)+(A.winsAsCrew||0), wb=(B.winsAsImpostor||0)+(B.winsAsCrew||0);
+      if(wb!==wa) return wb-wa;
+      return B.gamesPlayed - A.gamesPlayed;
+    });
+    var rows = sorted.map(function(name,i){
+      var s = state.stats[name];
+      var wins = (s.winsAsImpostor||0)+(s.winsAsCrew||0);
+      return '<div class="stat-row">' +
+        '<div class="srank">'+(i+1)+'</div>' +
+        '<div class="sname">'+escapeHtml(name)+'</div>' +
+        '<div class="sval">🎲 '+s.gamesPlayed+'</div>' +
+        '<div class="sval">😈 '+s.timesImpostor+'×</div>' +
+        '<div class="sval">🏆 '+wins+'×</div>' +
+      '</div>';
+    }).join('');
+    body = '<div class="results-list" style="gap:8px; margin-top:4px;">'+rows+'</div>' +
+      '<button class="btn btn-ghost btn-sm" style="margin-top:16px;" onclick="clearStats()">Vymazat statistiky</button>';
+  }
+
+  var backupMsgHtml = state.ui.backupMsg ? '<p class="hint-note" style="white-space:pre-wrap; word-break:break-all; margin-bottom:10px;">'+escapeHtml(state.ui.backupMsg)+'</p>' : '';
+  var importUi = '';
+  if(state.ui.showImport){
+    importUi = '<textarea class="guess-input" style="text-align:left; font-size:12px; font-weight:500; min-height:70px; margin-bottom:10px;" placeholder="Sem vlož kód zálohy..." oninput="handleImportInput(this.value)">'+escapeHtml(state.ui.importValue)+'</textarea>' +
+      '<button class="btn btn-good btn-sm" onclick="doBackupImport()">OBNOVIT ZE ZÁLOHY</button>';
+  }
+  var backupBox = '' +
+    '<div class="rules-box" style="margin-top:20px;">' +
+      '<p style="margin-bottom:10px;"><b style="color:var(--text)">Záloha statistik</b><br>Data se ukládají jen v tomto prohlížeči/zařízení. Pro jistotu (nebo pro přenos na jiný telefon) si můžeš vytvořit záložní kód.</p>' +
+      backupMsgHtml +
+      '<button class="btn btn-secondary btn-sm" onclick="doBackupExport()">VYTVOŘIT ZÁLOHU (zkopírovat kód)</button>' +
+      '<div style="height:8px"></div>' +
+      '<button class="btn btn-ghost btn-sm" onclick="toggleImportUi()">'+(state.ui.showImport?'ZRUŠIT OBNOVU':'OBNOVIT ZE ZÁLOHY')+'</button>' +
+      (state.ui.showImport ? '<div style="height:10px"></div>'+importUi : '') +
+    '</div>';
+
+  return '' +
+  '<div class="screen">' +
+    '<div class="top-nav"><button class="icon-btn" onclick="goHome()">←</button><div class="eyebrow" style="margin:0;">Statistiky</div><div style="width:40px"></div></div>' +
+    '<div class="card">' +
+      '<div class="section-title title-font">Žebříček hráčů</div>' +
+      '<div class="section-sub">🎲 odehrané hry · 😈 kolikrát Impostor · 🏆 výhry. Ukládá se jen v tomto zařízení.</div>' +
+      body +
+      backupBox +
+    '</div>' +
+  '</div>';
+}
+
+function renderSettings(){
+  var s = state.settings;
+  function choice(active,label,onclick,sub){
+    return '<div class="choice'+(active?' active':'')+'" onclick="'+onclick+'">'+label+(sub?'<small>'+sub+'</small>':'')+'</div>';
+  }
+  var catChips = '';
+  CATEGORY_ORDER.forEach(function(c){
+    var active = s.categories.indexOf(c)!==-1;
+    catChips += '<div class="chip'+(active?' active':'')+'" onclick="toggleCategory(\''+c+'\')">'+CATEGORY_EMOJI[c]+' '+c+'</div>';
+  });
+  return '' +
+  '<div class="screen">' +
+    '<div class="top-nav"><button class="icon-btn" onclick="backToHomeFromSettings()">←</button><div class="eyebrow" style="margin:0;">Krok 1 ze 2</div><div style="width:40px"></div></div>' +
+    '<div class="card">' +
+      '<div class="section-title title-font">Nastavení hry</div>' +
+      '<div class="section-sub">Uprav pravidla podle chuti. Nastavení jde kdykoliv před novou hrou změnit.</div>' +
+
+      '<div class="field">' +
+        '<span class="field-label">Počet Impostorů</span>' +
+        '<div class="choice-grid col2">' +
+          choice(s.impostorCount===1,'1 Impostor','setImpostorCount(1)') +
+          choice(s.impostorCount===2,'2 Impostoři','setImpostorCount(2)') +
+        '</div>' +
+      '</div>' +
+
+      '<div class="field">' +
+        '<div class="row-between" style="margin-bottom:10px;">' +
+          '<span class="field-label" style="margin-bottom:0;">Kategorie slov</span>' +
+          '<button class="btn btn-ghost btn-sm" style="width:auto; margin:0;" onclick="selectAllCategories()">Vybrat vše</button>' +
+        '</div>' +
+        '<div class="chip-row" style="margin-bottom:6px;">' + catChips + '</div>' +
+        '<div class="hint-note">'+s.categories.length+' z '+CATEGORY_ORDER.length+' kategorií vybráno</div>' +
+      '</div>' +
+
+      '<div class="field">' +
+        '<span class="field-label">Informace pro Impostora</span>' +
+        '<div class="stack-choice">' +
+          radioRow(s.impostorInfo==='none','Bez nápovědy','Impostor neví vůbec nic.',"setImpostorInfo('none')") +
+          radioRow(s.impostorInfo==='category','Kategorie','Impostor zná kategorii tajného slova.',"setImpostorInfo('category')") +
+          radioRow(s.impostorInfo==='hint','Obecná nápověda','Impostor dostane nepřímou nápovědu.',"setImpostorInfo('hint')") +
+        '</div>' +
+      '</div>' +
+
+      '<div class="field">' +
+        '<span class="field-label">Pořadí hráčů u nápověd</span>' +
+        '<div class="choice-grid col2">' +
+          choice(s.randomOrder===true,'Náhodné','setRandomOrder(true)') +
+          choice(s.randomOrder===false,'Podle seznamu','setRandomOrder(false)') +
+        '</div>' +
+      '</div>' +
+
+      '<div class="field">' +
+        '<span class="field-label">Časovač diskuse</span>' +
+        '<div class="choice-grid col3" style="flex-wrap:wrap;">' +
+          choice(s.discussionTimer===0,'Bez limitu','setDiscussionTimer(0)') +
+          choice(s.discussionTimer===30,'30 s','setDiscussionTimer(30)') +
+          choice(s.discussionTimer===60,'60 s','setDiscussionTimer(60)') +
+        '</div>' +
+        '<div class="choice-grid col2" style="margin-top:10px;">' +
+          choice(s.discussionTimer===90,'90 s','setDiscussionTimer(90)') +
+          choice(s.discussionTimer===120,'120 s','setDiscussionTimer(120)') +
+        '</div>' +
+      '</div>' +
+
+      '<div class="field" style="margin-bottom:6px;">' +
+        '<span class="field-label">Poslední šance Impostora</span>' +
+        '<div class="choice-grid col2">' +
+          choice(s.lastChance===true,'Ano','setLastChance(true)') +
+          choice(s.lastChance===false,'Ne','setLastChance(false)') +
+        '</div>' +
+      '</div>' +
+
+      '<button class="btn btn-primary" style="margin-top:18px;" onclick="goToPlayers()">POKRAČOVAT</button>' +
+    '</div>' +
+  '</div>';
+}
+function radioRow(active,main,sub,onclick){
+  return '<div class="choice'+(active?' active':'')+'" onclick="'+onclick+'"><span class="dot"></span><div><div class="label-main">'+main+'</div><div class="label-sub">'+sub+'</div></div></div>';
+}
+function setImpostorCount(n){ state.settings.impostorCount=n; render(); }
+function toggleCategory(c){
+  var idx = state.settings.categories.indexOf(c);
+  if(idx!==-1){
+    if(state.settings.categories.length>1){ state.settings.categories.splice(idx,1); }
+  } else {
+    state.settings.categories.push(c);
+  }
+  render();
+}
+function selectAllCategories(){ state.settings.categories = CATEGORY_ORDER.slice(); render(); }
+function setImpostorInfo(v){ state.settings.impostorInfo=v; render(); }
+function setRandomOrder(v){ state.settings.randomOrder=v; render(); }
+function setDiscussionTimer(v){ state.settings.discussionTimer=v; render(); }
+function setLastChance(v){ state.settings.lastChance=v; render(); }
+
+function renderPlayers(){
+  var items = state.players.map(function(p,i){
+    return '<div class="player-item">' +
+      '<div class="player-num">'+(i+1)+'</div>' +
+      '<input class="player-input" type="text" value="'+escapeHtml(p.name)+'" maxlength="20" oninput="handlePlayerNameInput('+p.id+',this.value)">' +
+      '<button class="player-remove" '+(state.players.length<=3?'disabled':'')+' onclick="removePlayer('+p.id+')">✕</button>' +
+    '</div>';
+  }).join('');
+  var currentNames = state.players.map(function(p){return (p.name||'').trim();});
+  var available = state.knownPlayers.filter(function(n){ return currentNames.indexOf(n)===-1; });
+  var chips = '';
+  if(available.length && state.players.length<12){
+    chips = '<span class="field-label">Naposledy hráli</span>' +
+      '<div class="chip-row">' + available.map(function(n){
+        return '<div class="chip" data-name="'+escapeHtml(n)+'" onclick="addKnownPlayer(this.dataset.name)">+ '+escapeHtml(n)+'</div>';
+      }).join('') + '</div>';
+  }
+  var warn = !canStartGame() ? '<div class="warn-box">Potřebuješ alespoň '+(state.settings.impostorCount+1)+' hráčů pro '+state.settings.impostorCount+' '+(state.settings.impostorCount===1?'Impostora':'Impostory')+'.</div>' : '';
+  return '' +
+  '<div class="screen">' +
+    '<div class="top-nav"><button class="icon-btn" onclick="backToSettings()">←</button><div class="eyebrow" style="margin:0;">Krok 2 ze 2</div><div style="width:40px"></div></div>' +
+    '<div class="card">' +
+      '<div class="section-title title-font">Kdo hraje?</div>' +
+      '<div class="section-sub">Uprav jména hráčů. Minimálně 3, maximálně 12.</div>' +
+      '<div class="player-list">'+items+'</div>' +
+      '<button class="btn btn-ghost btn-sm" '+(state.players.length>=12?'disabled':'')+' onclick="addPlayer()">+ PŘIDAT HRÁČE</button>' +
+      '<div style="height:16px"></div>' +
+      chips +
+      warn +
+      '<button class="btn btn-primary" '+(!canStartGame()?'disabled':'')+' onclick="startGame()">ZAČÍT HRU</button>' +
+    '</div>' +
+  '</div>';
+}
+function addKnownPlayer(name){
+  var isDefault = /^Hráč \d+$/;
+  var emptySlot = state.players.find(function(p){ return isDefault.test((p.name||'').trim()); });
+  if(emptySlot){
+    emptySlot.name = name;
+  } else if(state.players.length<12){
+    nextPlayerId++;
+    state.players.push({id:nextPlayerId, name:name});
+  } else {
+    return;
+  }
+  render();
+}
+function escapeHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function progressDots(total,current){
+  var out = '<div class="progress-dots">';
+  for(var i=0;i<total;i++){
+    out += '<span class="'+(i<current?'done':(i===current?'current':''))+'"></span>';
+  }
+  out += '</div>';
+  return out;
+}
+
+function renderRoleReveal(){
+  var r = state.round;
+  var pid = r.revealOrder[r.revealIndex];
+  var name = getPlayerName(pid);
+  var isImpostor = r.impostorIds.indexOf(pid)!==-1;
+
+  if(r.revealPhase==='ready'){
+    return '' +
+    '<div class="screen">' +
+      progressDots(r.revealOrder.length, r.revealIndex) +
+      '<div class="card handoff">' +
+        '<div class="avatar">'+initials(name)+'</div>' +
+        '<div class="passline">Předej zařízení hráči</div>' +
+        '<div class="name title-font">'+escapeHtml(name)+'</div>' +
+        '<button class="btn btn-primary" onclick="revealRole()">ZOBRAZIT MOJI ROLI</button>' +
+      '</div>' +
+      '<p class="foot-note">Ujisti se, že se nikdo jiný nedívá na obrazovku.</p>' +
+    '</div>';
+  }
+
+  var cardHtml;
+  if(isImpostor){
+    var infoLine = '';
+    if(state.settings.impostorInfo==='category'){
+      infoLine = '<div class="reveal-note">Kategorie: <b style="color:var(--text)">'+CATEGORY_EMOJI[r.wordObj.category]+' '+r.wordObj.category+'</b></div>';
+    } else if(state.settings.impostorInfo==='hint'){
+      infoLine = '<div class="reveal-note">Obecná nápověda:<br>„'+r.wordObj.hint+'“</div>';
+    } else {
+      infoLine = '<div class="reveal-note">Tajné slovo neznáš. Poslouchej nápovědy ostatních a snaž se splynout.</div>';
+    }
+    cardHtml = '<div class="reveal-card role-bad">' +
+      '<div class="reveal-tag">Tvoje role</div>' +
+      '<span class="reveal-emoji">😈</span>' +
+      '<div class="reveal-word title-font">JSI IMPOSTOR</div>' +
+      infoLine +
+    '</div>';
+  } else {
+    cardHtml = '<div class="reveal-card role-good">' +
+      '<div class="reveal-tag">Tajné slovo</div>' +
+      '<span class="reveal-emoji">'+CATEGORY_EMOJI[r.wordObj.category]+'</span>' +
+      '<div class="reveal-word title-font">'+r.wordObj.word.toUpperCase()+'</div>' +
+      '<div class="reveal-note">Zapamatuj si své slovo. Neprozraď ho nikomu.</div>' +
+    '</div>';
+  }
+
+  return '' +
+  '<div class="screen">' +
+    progressDots(r.revealOrder.length, r.revealIndex) +
+    '<div class="card">' +
+      cardHtml +
+      '<button class="btn btn-primary" onclick="hideRole()">SKRÝT INFORMACI</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderHintIntro(){
+  return '' +
+  '<div class="screen">' +
+    '<div class="card">' +
+      '<div class="eyebrow">Fáze nápověd</div>' +
+      '<div class="section-title title-font" style="text-align:center;">Kolo nápověd</div>' +
+      '<div class="rules-box" style="margin-top:16px;">' +
+        '<p>Každý hráč řekne <b style="color:var(--text)">JEDNO</b> slovo, které souvisí s tajným slovem.</p>' +
+        '<p>Nesmíš říct samotné tajné slovo.</p>' +
+        '<p>Buď dostatečně konkrétní, ale ne tak, aby bylo slovo hned jasné.</p>' +
+      '</div>' +
+      '<button class="btn btn-primary" onclick="beginHintRound()">ZAČÍT KOLO NÁPOVĚD</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderHintRound(){
+  var r = state.round;
+  var pid = r.hintOrder[r.hintIndex];
+  var name = getPlayerName(pid);
+  var isLast = r.hintIndex >= r.hintOrder.length-1;
+  return '' +
+  '<div class="screen">' +
+    progressDots(r.hintOrder.length, r.hintIndex) +
+    '<div class="card turn-card">' +
+      '<div class="turn-tag">Nyní je na řadě</div>' +
+      '<div class="turn-name title-font">'+escapeHtml(name)+'</div>' +
+    '</div>' +
+    '<button class="btn btn-primary" style="margin-top:16px;" onclick="nextHintPlayer()">'+(isLast?'PŘEJÍT K DISKUSI':'DALŠÍ HRÁČ')+'</button>' +
+  '</div>';
+}
+
+function renderDiscussion(){
+  var s = state.settings;
+  var timerHtml;
+  if(s.discussionTimer>0){
+    timerHtml = '<div class="timer-ring" id="timerRing" style="--pct:100"><div class="t" id="timerText">--:--</div></div>';
+  } else {
+    timerHtml = '<div class="timer-none">⏱ Diskuse bez časového limitu</div>';
+  }
+  return '' +
+  '<div class="screen">' +
+    '<div class="card" style="text-align:center;">' +
+      '<div class="eyebrow">Diskuse</div>' +
+      '<div class="section-title title-font">Kdo je podle vás Impostor?</div>' +
+      '<div class="section-sub">Diskutujte. Kdo se choval podezřele? Čí nápověda nedávala smysl?</div>' +
+      timerHtml +
+      '<button class="btn btn-primary" onclick="goToVoteIntro()">HLASOVAT</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderVoteIntro(){
+  return '' +
+  '<div class="screen">' +
+    '<div class="card">' +
+      '<div class="eyebrow">Hlasování</div>' +
+      '<div class="section-title title-font" style="text-align:center;">Pravidla hlasování</div>' +
+      '<div class="rules-box" style="margin-top:16px;">' +
+        '<p>Zařízení se bude postupně předávat každému hráči.</p>' +
+        '<p>Každý tajně zvolí hráče, kterého považuje za Impostora.</p>' +
+        '<p>Nikdo jiný nesmí vidět, koho jsi zvolil.</p>' +
+      '</div>' +
+      '<button class="btn btn-primary" onclick="beginVoting()">ZAČÍT HLASOVÁNÍ</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderVoting(){
+  var r = state.round;
+  var voterId = r.voteOrder[r.voteIndex];
+  var voterName = getPlayerName(voterId);
+
+  if(r.votePhase==='ready'){
+    return '' +
+    '<div class="screen">' +
+      progressDots(r.voteOrder.length, r.voteIndex) +
+      '<div class="card handoff">' +
+        '<div class="avatar">'+initials(voterName)+'</div>' +
+        '<div class="passline">Předej zařízení hráči</div>' +
+        '<div class="name title-font">'+escapeHtml(voterName)+'</div>' +
+        '<button class="btn btn-primary" onclick="showVoteOptions()">HLASOVAT TAJNĚ</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  if(r.votePhase==='choosing'){
+    var options = state.players.filter(function(p){return p.id!==voterId;}).map(function(p){
+      return '<button class="vote-option" onclick="castVote('+p.id+')"><span class="num">'+initials(p.name)+'</span>'+escapeHtml(p.name)+'</button>';
+    }).join('');
+    return '' +
+    '<div class="screen">' +
+      '<div class="card">' +
+        '<div class="eyebrow" style="text-align:center;">Koho podezříváš?</div>' +
+        '<div class="section-title title-font" style="text-align:center; margin-bottom:18px;">Vyber hráče</div>' +
+        '<div class="vote-grid">'+options+'</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // confirmed
+  var isLast = r.voteIndex >= r.voteOrder.length-1;
+  return '' +
+  '<div class="screen">' +
+    '<div class="card handoff">' +
+      '<span class="reveal-emoji">✅</span>' +
+      '<div class="name title-font" style="font-size:24px;">Hlas zaznamenán</div>' +
+      '<p class="section-sub">'+(isLast?'To byl poslední hlas.':'Předej zařízení dalšímu hráči.')+'</p>' +
+      '<button class="btn btn-primary" onclick="nextVoter()">'+(isLast?'ZOBRAZIT VÝSLEDKY':'POKRAČOVAT')+'</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderResults(){
+  var r = state.round;
+  var rows = state.players.slice().sort(function(a,b){ return (r.voteCounts[b.id]||0)-(r.voteCounts[a.id]||0); }).map(function(p){
+    var c = r.voteCounts[p.id]||0;
+    var max = Math.max.apply(null, Object.keys(r.voteCounts).map(function(k){return r.voteCounts[k];}));
+    var pct = max>0 ? Math.round((c/max)*100) : 0;
+    var isTop = !r.tie && p.id===r.accusedId;
+    return '<div class="results-row'+(isTop?' top':'')+'">' +
+      '<div class="rname">'+escapeHtml(p.name)+'</div>' +
+      '<div class="rbar-wrap"><div class="rbar" style="width:'+pct+'%"></div></div>' +
+      '<div class="rcount">'+c+' '+(c===1?'hlas':(c>=2&&c<=4?'hlasy':'hlasů'))+'</div>' +
+    '</div>';
+  }).join('');
+
+  var verdict;
+  if(r.tie){
+    verdict = '<div class="verdict neutral"><span class="verdict-emoji">🤷</span><div class="verdict-title title-font">Remíza</div><div class="verdict-sub">Nikdo nebyl s jistotou označen.</div></div>';
+  } else {
+    var name = getPlayerName(r.accusedId);
+    if(r.accusedIsImpostor){
+      verdict = '<div class="verdict bad"><span class="verdict-emoji">😈</span><div class="verdict-title title-font">'+escapeHtml(name)+' BYL IMPOSTOR</div><div class="verdict-sub">Hráči ho odhalili!</div></div>';
+    } else {
+      verdict = '<div class="verdict good"><span class="verdict-emoji">😇</span><div class="verdict-title title-font">'+escapeHtml(name)+' NEBYL IMPOSTOR</div><div class="verdict-sub">Impostor zůstává mezi vámi ukrytý...</div></div>';
+    }
+  }
+
+  return '' +
+  '<div class="screen">' +
+    '<div class="card">' +
+      '<div class="eyebrow" style="text-align:center;">Výsledky hlasování</div>' +
+      '<div class="results-list" style="margin-top:16px;">'+rows+'</div>' +
+      verdict +
+      '<button class="btn btn-primary" onclick="afterResults()">POKRAČOVAT</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderImpostorGuess(){
+  var r = state.round;
+  var name = getPlayerName(r.accusedId);
+
+  if(!r.guessSubmitted){
+    return '' +
+    '<div class="screen">' +
+      '<div class="card" style="text-align:center;">' +
+        '<span class="reveal-emoji">😈</span>' +
+        '<div class="section-title title-font">Byl jsi odhalen</div>' +
+        '<div class="section-sub">'+escapeHtml(name)+', máš poslední šanci. Jaké bylo tajné slovo?</div>' +
+        '<input class="guess-input" type="text" placeholder="Tvůj tip..." oninput="handleGuessInput(this.value)" onkeydown="if(event.key===\'Enter\')submitGuess()">' +
+        '<button class="btn btn-primary" onclick="submitGuess()">ODPOVĚDĚT</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var verdict = r.guessCorrect ?
+    '<div class="verdict bad"><span class="verdict-emoji">😈</span><div class="verdict-title title-font">IMPOSTOR UHODL SLOVO!</div><div class="verdict-sub">Impostor vyhrává.</div></div>' :
+    '<div class="verdict good"><span class="verdict-emoji">😇</span><div class="verdict-title title-font">IMPOSTOR SLOVO NEUHODL</div><div class="verdict-sub">Ostatní hráči vyhrávají. Slovo bylo: <b style="color:var(--text)">'+r.wordObj.word+'</b></div></div>';
+
+  return '' +
+  '<div class="screen">' +
+    '<div class="card">' +
+      verdict +
+      '<button class="btn btn-primary" onclick="finishGuess()">POKRAČOVAT</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderGameEnd(){
+  var r = state.round;
+  var impostorNames = r.impostorIds.map(getPlayerName).join(', ');
+  return '' +
+  '<div class="screen">' +
+    '<div class="card" style="text-align:center;">' +
+      '<span class="cat-emoji-big">'+CATEGORY_EMOJI[r.wordObj.category]+'</span>' +
+      '<div class="section-title title-font">Kolo skončilo</div>' +
+      '<div class="summary-box" style="text-align:left; margin-top:16px;">' +
+        '<div class="summary-row"><span class="k">Tajné slovo</span><span class="v">'+r.wordObj.word+'</span></div>' +
+        '<div class="summary-row"><span class="k">Kategorie</span><span class="v">'+r.wordObj.category+'</span></div>' +
+        '<div class="summary-row"><span class="k">'+(r.impostorIds.length>1?'Impostoři byli':'Impostor byl')+'</span><span class="v">'+escapeHtml(impostorNames)+'</span></div>' +
+      '</div>' +
+      '<button class="btn btn-primary" onclick="nextRound()">DALŠÍ KOLO</button>' +
+      '<button class="btn btn-secondary" onclick="newGameFromEnd()">NOVÁ HRA</button>' +
+      '<button class="btn btn-ghost" onclick="goHome()">DOMŮ</button>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ---------- 6. START ---------- */
+state.stats = safeGet('impostor_stats_v1') || {};
+state.knownPlayers = safeGet('impostor_known_players_v1') || [];
+requestPersistentStorage();
+render();
+</script>
+</body>
+</html>
