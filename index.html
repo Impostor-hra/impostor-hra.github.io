@@ -553,7 +553,7 @@ var WORDS = [
   {word:"Guláš",category:"Jídlo",hint:"hovězí"},
   {word:"Svíčková",category:"Jídlo",hint:"nedělní"},
   {word:"Řízek",category:"Jídlo",hint:"smažený"},
-  {word:"Bramborák",category:"Jídlo",hint:"bramborový"},
+  {word:"Bramborák",category:"Jídlo",hint:"česnekový"},
   {word:"Koláč",category:"Jídlo",hint:"tvarohový"},
   {word:"Palačinka",category:"Jídlo",hint:"tenká"},
   {word:"Chleba",category:"Jídlo",hint:"krajíc"},
@@ -587,7 +587,7 @@ var WORDS = [
   {word:"Mošt",category:"Nápoje",hint:"jablečný"},
   {word:"Sirup",category:"Nápoje",hint:"hustý"},
   {word:"Kakao",category:"Nápoje",hint:"dětský"},
-  {word:"Medovina",category:"Nápoje",hint:"medová"},
+  {word:"Medovina",category:"Nápoje",hint:"středověká"},
   {word:"Fanta",category:"Nápoje",hint:"oranžová"},
   // Zvířata
   {word:"Pes",category:"Zvířata",hint:"štěká"},
@@ -661,7 +661,7 @@ var WORDS = [
   {word:"Řidič",category:"Povolání",hint:"volant"},
   {word:"Prodavač",category:"Povolání",hint:"obchod"},
   {word:"Zedník",category:"Povolání",hint:"cihly"},
-  {word:"Elektrikář",category:"Povolání",hint:"elektřina"},
+  {word:"Elektrikář",category:"Povolání",hint:"zásuvka"},
   {word:"Instalatér",category:"Povolání",hint:"potrubí"},
   {word:"Právník",category:"Povolání",hint:"soud"},
   {word:"Účetní",category:"Povolání",hint:"čísla"},
@@ -672,7 +672,7 @@ var WORDS = [
   {word:"Malíř",category:"Povolání",hint:"štětec"},
   {word:"Pilot",category:"Povolání",hint:"letadlo"},
   {word:"Voják",category:"Povolání",hint:"armáda"},
-  {word:"Zubař",category:"Povolání",hint:"zuby"},
+  {word:"Zubař",category:"Povolání",hint:"vrtačka"},
   // Sport
   {word:"Fotbal",category:"Sport",hint:"branka"},
   {word:"Hokej",category:"Sport",hint:"led"},
@@ -682,7 +682,7 @@ var WORDS = [
   {word:"Plavání",category:"Sport",hint:"bazén"},
   {word:"Běh",category:"Sport",hint:"rychlost"},
   {word:"Lyžování",category:"Sport",hint:"sníh"},
-  {word:"Cyklistika",category:"Sport",hint:"kolo"},
+  {word:"Cyklistika",category:"Sport",hint:"helma"},
   {word:"Box",category:"Sport",hint:"pěsti"},
   {word:"Golf",category:"Sport",hint:"jamka"},
   {word:"Ragby",category:"Sport",hint:"kontaktní"},
@@ -710,8 +710,8 @@ var WORDS = [
   {word:"Lanovka",category:"Doprava",hint:"hory"},
   {word:"Trolejbus",category:"Doprava",hint:"dráty"},
   {word:"Traktor",category:"Doprava",hint:"pole"},
-  {word:"Náklaďák",category:"Doprava",hint:"náklad"},
-  {word:"Vrtulník",category:"Doprava",hint:"vrtule"},
+  {word:"Náklaďák",category:"Doprava",hint:"korba"},
+  {word:"Vrtulník",category:"Doprava",hint:"rotor"},
   {word:"Raketa",category:"Doprava",hint:"vesmír"},
   {word:"Balon",category:"Doprava",hint:"vzduchem"},
   {word:"Kajak",category:"Doprava",hint:"veslo"},
@@ -747,7 +747,7 @@ var WORDS = [
   {word:"Muzeum",category:"Místa",hint:"exponáty"},
   {word:"Divadlo",category:"Místa",hint:"jeviště"},
   {word:"Kino",category:"Místa",hint:"plátno"},
-  {word:"Knihovna",category:"Místa",hint:"knihy"},
+  {word:"Knihovna",category:"Místa",hint:"půjčování"},
   {word:"Stadion",category:"Místa",hint:"zápas"},
   {word:"Letiště",category:"Místa",hint:"odlety"},
   {word:"Nádraží",category:"Místa",hint:"vlaky"},
@@ -756,7 +756,7 @@ var WORDS = [
   {word:"Zoo",category:"Místa",hint:"zvířata"},
   {word:"Pláž",category:"Místa",hint:"písek"},
   {word:"Kancelář",category:"Místa",hint:"práce"},
-  {word:"Věznice",category:"Místa",hint:"vězni"},
+  {word:"Věznice",category:"Místa",hint:"mříže"},
   // Technologie
   {word:"Počítač",category:"Technologie",hint:"obrazovka"},
   {word:"Notebook",category:"Technologie",hint:"přenosný"},
@@ -808,7 +808,7 @@ var WORDS = [
   {word:"Turistika",category:"Aktivity",hint:"příroda"},
   {word:"Rybaření",category:"Aktivity",hint:"udice"},
   {word:"Zahradničení",category:"Aktivity",hint:"rostliny"},
-  {word:"Fotografování",category:"Aktivity",hint:"fotoaparát"},
+  {word:"Fotografování",category:"Aktivity",hint:"objektiv"},
   {word:"Nakupování",category:"Aktivity",hint:"obchody"},
   {word:"Spaní",category:"Aktivity",hint:"odpočinek"},
   {word:"Cestování",category:"Aktivity",hint:"poznávání"},
@@ -832,7 +832,7 @@ var WORDS = [
   {word:"Soused",category:"Lidé",hint:"vedle"},
   {word:"Cizinec",category:"Lidé",hint:"neznámý"},
   {word:"Snoubenka",category:"Lidé",hint:"zásnuby"},
-  {word:"Manžel",category:"Lidé",hint:"manželství"},
+  {word:"Manžel",category:"Lidé",hint:"prstýnek"},
   {word:"Dvojče",category:"Lidé",hint:"podobný"},
   {word:"Blondýna",category:"Lidé",hint:"vlasy"},
   {word:"Fanoušek",category:"Lidé",hint:"podpora"},
@@ -1088,8 +1088,10 @@ function backToHomeFromSettings(){ state.screen='home'; render(); }
 
 function addPlayer(){
   if(state.players.length>=12) return;
+  var n = 1;
+  while(state.players.some(function(p){ return (p.name||'').trim()==='Hráč '+n; })) n++;
   nextPlayerId++;
-  state.players.push({id:nextPlayerId, name:'Hráč '+(state.players.length+1)});
+  state.players.push({id:nextPlayerId, name:'Hráč '+n});
   render();
 }
 function removePlayer(id){
@@ -1102,11 +1104,21 @@ function handlePlayerNameInput(id, value){
   if(p) p.name = value;
 }
 
+function hasDuplicateNames(){
+  var seen = {};
+  return state.players.some(function(p){
+    var n = (p.name||'').trim().toLowerCase();
+    if(seen[n]) return true;
+    seen[n] = true;
+    return false;
+  });
+}
 function canStartGame(){
   return state.players.length>=3 && state.settings.impostorCount < state.players.length;
 }
 function startGame(){
   if(!canStartGame()) return;
+  if(hasDuplicateNames()){ alert('Dva hráči mají stejné jméno. Uprav jména tak, aby byla různá.'); return; }
   startNewRound();
 }
 function startNewRound(){
@@ -1250,7 +1262,8 @@ function afterResults(){
 function handleGuessInput(v){ state.round.guess = v; }
 function submitGuess(){
   var r = state.round;
-  var norm = function(s){ return (s||'').trim().toLowerCase(); };
+  var norm = function(s){ return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); };
+  if(!norm(r.guess)) return;
   r.guessCorrect = norm(r.guess) === norm(r.wordObj.word);
   r.guessSubmitted = true;
   recordOutcome(r.guessCorrect ? 'impostor' : 'crew');
