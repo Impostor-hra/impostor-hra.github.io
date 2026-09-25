@@ -53,11 +53,33 @@ přečte svou roli/slovo a schová.
 3b. **OTEVŘENÁ OTÁZKA — 2 impostoři:** při 3 hráčích se 2 impostoři domluví
    a přehlasují jediného poctivého. Navrženo (čeká na souhlas uživatele):
    2 impostoři až od 5 hráčů; hráči vyhrávají, když chytí aspoň jednoho.
-3c. Nevyřešené drobnosti z kontroly kódu (uživatel zatím neřekl, zda opravit):
-   Google Fonts jako externí závislost (GDPR), v kódu zálohy se čísla
-   neescapují (self-XSS), `correctVotes` se počítá, ale nezobrazuje, přerušená
-   hra se počítá jako odehraná, prázdná CSS pravidla na začátku `<style>`,
-   „Trůny“ → „Hra o trůny“, „Frozen“ → „Ledové království“.
+3c. **Hloubková kontrola kódu (2026-09-25) — nálezy, zatím NEOPRAVENO**
+   (uživatel chce opravy řešit příště; ověřeno testy v prohlížeči):
+   Vážnější:
+   - Dvojklik při hlasování: tlačítko „POKRAČOVAT“ (potvrzení hlasu) se
+     překrývá s „HLASOVAT TAJNĚ“ dalšího hráče a to s volbami hráčů →
+     rychlý dvojklik může odhlasovat za jiného / omylem. Obrazovka výběru
+     navíc neukazuje jméno hlasujícího. Návrh: krátký zámek kliknutí
+     (~400 ms) po každé změně obrazovky + jméno hlasujícího na výběru.
+   - Rozehrané kolo nejde ukončit (žádné „Domů“ od odhalení rolí po
+     výsledky) — v appce z plochy / v App Store verzi není ani reload.
+   - Prázdné jméno hráče (jen mezery) projde → prázdné jméno ve hře.
+   - Import zálohy: `stats:{A:null}` shodí appku a uloží se → obrazovka
+     statistik je pak trvale rozbitá; `knownPlayers` jako ne-pole shodí
+     obrazovku hráčů; čísla ve statistikách se neescapují (vložení HTML).
+   Menší:
+   - Tip v poslední šanci: „spiderman“ ≠ „Spider-Man“, dvojitá mezera
+     nebo pomlčka = špatně → ignorovat mezery a pomlčky.
+   - `initials()` u jména začínajícího emoji zobrazí rozbitý znak (�).
+   - Časovač diskuse počítá tiky `setInterval` → při zamčeném telefonu
+     se zastaví; přesnější je počítat podle času konce.
+   - Nastavení a seznam hráčů se nepamatují mezi spuštěními.
+   - Statistiky zapisují i výchozí jména „Hráč 1“ atd.
+   - Přerušená hra se počítá jako odehraná; `correctVotes` se počítá, ale
+     nezobrazuje; Google Fonts = externí závislost (offline/GDPR, nutné
+     odstranit kvůli App Store); prázdná CSS pravidla na začátku `<style>`;
+     „Trůny“ → „Hra o trůny“, „Frozen“ → „Ledové království“.
+   - Klikací `div` místo `button` (.choice, .chip) → horší přístupnost.
 4. Později: možnost přepnout jazyk (čeština/angličtina) — vyžaduje vytáhnout
    UI texty do slovníku (aktuálně jsou napevno v render funkcích) a vytvořit
    druhou, anglickou databázi slov + jednoslovných nápověd (ne jen strojový
@@ -66,6 +88,25 @@ přečte svou roli/slovo a schová.
    Apple Developer účet 99 $/rok, schvalovací proces) — uživatel to zatím
    odkládá, chce nejdřív přes web/sociální sítě ověřit, jestli je o hru
    vůbec zájem.
+   **Pořadí dohodnuté 2026-09-25:** 1) opravit nálezy z bodu 3c,
+   2) rozhodnutí uživatele, 3) technická příprava, 4) materiály + TestFlight.
+   Checklist (probráno s uživatelem):
+   - Blokery: build iOS vyžaduje macOS/Xcode (uživatel má Windows → cloud
+     build: Codemagic / GitHub Actions macOS / pronájem Macu); v EU (DSA)
+     Apple u prodávajícího zveřejní jméno, adresu, telefon, e-mail (uživateli
+     vadí zveřejnění jména → alternativa firma s D-U-N-S); pravidlo 4.2
+     (ne „obalený web“ — musí fungovat offline) a 4.3 (hodně podobných her).
+   - Rozhodnutí uživatele: obchodní model (placená vs. zdarma + balíčky
+     slov), co s webovou verzí zdarma, Minecraft kategorie, osobní účet vs.
+     firma, daně/živnost → konzultace s účetní.
+   - Technika: Capacitor obal, vše offline (písma lokálně), trvalé
+     ukládání statistik, splash, ikona 1024×1024 bez průhlednosti, TestFlight.
+   - Materiály: screenshoty, popis, klíčová slova, URL zásad ochrany
+     soukromí + podpory, věkové hodnocení (zmínky o alkoholu ve slovech),
+     App Privacy „Data Not Collected“, export compliance.
+   - Tip: Google Play jako jednodušší start (25 $ jednorázově, bez Macu).
+   Vícejazyčnost (EN, pak DE) je odložená — otevřené otázky: stejné
+   kategorie ve všech jazycích? Minecraft v cizích jazycích?
 6. **Trvale odloženo** (nerozjíždět bez výslovného zadání): automatická
    cloudová synchronizace statistik napříč zařízeními (zvažovány
    Supabase/Firebase). Uživatel to zatím nechce řešit.
