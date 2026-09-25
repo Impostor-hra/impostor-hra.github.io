@@ -35,11 +35,6 @@
   --impostor:#ff3d78;
   --shadow: 0 20px 60px rgba(0,0,0,0.45);
 }
-:root:not([data-theme="light"]){ }
-:root[data-theme="dark"]{ }
-@media (prefers-color-scheme: light){
-  :root:not([data-theme="light"]){ }
-}
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
@@ -787,11 +782,11 @@ var WORDS = [
   {word:"Harry Potter",category:"Filmy a seriály",hint:"kouzelník"},
   {word:"Star Wars",category:"Filmy a seriály",hint:"vesmírné"},
   {word:"Shrek",category:"Filmy a seriály",hint:"animák"},
-  {word:"Frozen",category:"Filmy a seriály",hint:"led"},
+  {word:"Ledové království",category:"Filmy a seriály",hint:"led"},
   {word:"Batman",category:"Filmy a seriály",hint:"superhrdina"},
   {word:"Spider-Man",category:"Filmy a seriály",hint:"pavučina"},
   {word:"Vikingové",category:"Filmy a seriály",hint:"bojovníci"},
-  {word:"Trůny",category:"Filmy a seriály",hint:"fantasy"},
+  {word:"Hra o trůny",category:"Filmy a seriály",hint:"fantasy"},
   {word:"Stranger Things",category:"Filmy a seriály",hint:"záhady"},
   {word:"Rychle a zběsile",category:"Filmy a seriály",hint:"auta"},
   {word:"Rocky",category:"Filmy a seriály",hint:"boxer"},
@@ -925,7 +920,7 @@ function getPlayerName(id){
 }
 function initials(name){
   var t = (name||'?').trim();
-  return t.length ? t.charAt(0).toUpperCase() : '?';
+  return t.length ? Array.from(t)[0].toUpperCase() : '?';
 }
 function pickWord(){
   var cats = (state.settings.categories && state.settings.categories.length) ? state.settings.categories : CATEGORY_ORDER;
@@ -959,6 +954,7 @@ function safeSet(key, val){
 function saveStats(){ safeSet('impostor_stats_v1', state.stats); }
 function saveKnownPlayers(){ safeSet('impostor_known_players_v1', state.knownPlayers); }
 function statKey(name){ return (name||'').trim() || 'Hráč'; }
+function isDefaultName(name){ return /^Hráč \d+$/.test((name||'').trim()); }
 function ensureStat(key){
   if(!state.stats[key]){
     state.stats[key] = {gamesPlayed:0, timesImpostor:0, winsAsImpostor:0, winsAsCrew:0, correctVotes:0};
@@ -978,6 +974,7 @@ function rememberKnownPlayers(){
 }
 function recordRoundStart(){
   state.players.forEach(function(p){
+    if(isDefaultName(p.name)) return;
     var key = statKey(p.name);
     ensureStat(key);
     state.stats[key].gamesPlayed++;
@@ -990,7 +987,7 @@ function recordVoteStats(){
   Object.keys(r.votes).forEach(function(voterIdStr){
     var voterId = Number(voterIdStr);
     var voter = state.players.find(function(p){return p.id===voterId;});
-    if(!voter) return;
+    if(!voter || isDefaultName(voter.name)) return;
     var target = r.votes[voterIdStr];
     if(r.impostorIds.indexOf(target)!==-1){
       var key = statKey(voter.name);
@@ -1002,7 +999,10 @@ function recordVoteStats(){
 }
 function recordOutcome(outcome){
   var r = state.round;
+  recordRoundStart();
+  recordVoteStats();
   state.players.forEach(function(p){
+    if(isDefaultName(p.name)) return;
     var key = statKey(p.name);
     ensureStat(key);
     var isImp = r.impostorIds.indexOf(p.id)!==-1;
@@ -1027,6 +1027,19 @@ function requestPersistentStorage(){
 /* ---------- 3c. ZÁLOHA / OBNOVA STATISTIK ---------- */
 function utf8ToB64(str){ return btoa(unescape(encodeURIComponent(str))); }
 function b64ToUtf8(str){ return decodeURIComponent(escape(atob(str))); }
+function cleanStats(raw){
+  var out = {};
+  if(!raw || typeof raw!=='object') return out;
+  Object.keys(raw).forEach(function(name){
+    var s = raw[name];
+    if(!s || typeof s!=='object') return;
+    out[name] = {gamesPlayed:+s.gamesPlayed||0, timesImpostor:+s.timesImpostor||0, winsAsImpostor:+s.winsAsImpostor||0, winsAsCrew:+s.winsAsCrew||0, correctVotes:+s.correctVotes||0};
+  });
+  return out;
+}
+function cleanKnownPlayers(raw){
+  return Array.isArray(raw) ? raw.filter(function(n){ return typeof n==='string'; }) : [];
+}
 function generateBackupCode(){
   return utf8ToB64(JSON.stringify({v:1, stats:state.stats, knownPlayers:state.knownPlayers}));
 }
@@ -1061,8 +1074,8 @@ function doBackupImport(){
     render();
     return;
   }
-  state.stats = obj.stats || {};
-  state.knownPlayers = obj.knownPlayers || [];
+  state.stats = cleanStats(obj.stats);
+  state.knownPlayers = cleanKnownPlayers(obj.knownPlayers);
   saveStats();
   saveKnownPlayers();
   state.ui.showImport = false;
@@ -1073,6 +1086,9 @@ function doBackupImport(){
 
 /* ---------- 4. HERNÍ TOKY ---------- */
 function goHome(){ stopDiscussionTimer(); state.screen='home'; render(); }
+function abortRound(){
+  if(confirm('Ukončit rozehrané kolo? Do statistik se nezapočítá.')) goHome();
+}
 function goToStats(){ state.screen='stats'; render(); }
 function goRules(){ state.prevScreen = state.screen; state.screen='rules'; render(); }
 function backFromRules(){ state.screen = state.prevScreen==='rules' ? 'home' : state.prevScreen; render(); }
@@ -1118,7 +1134,9 @@ function canStartGame(){
 }
 function startGame(){
   if(!canStartGame()) return;
+  if(state.players.some(function(p){ return !(p.name||'').trim(); })){ alert('Některý hráč nemá jméno. Doplň ho prosím.'); return; }
   if(hasDuplicateNames()){ alert('Dva hráči mají stejné jméno. Uprav jména tak, aby byla různá.'); return; }
+  safeSet('impostor_setup_v1', {settings:state.settings, players:state.players});
   startNewRound();
 }
 function startNewRound(){
@@ -1146,7 +1164,6 @@ function startNewRound(){
     guess: ''
   };
   state.screen = 'roleReveal';
-  recordRoundStart();
   rememberKnownPlayers();
   render();
 }
@@ -1178,15 +1195,15 @@ function nextHintPlayer(){
 
 function startDiscussionTimerIfNeeded(){
   var r = state.round;
-  if(state.settings.discussionTimer>0 && !r.timerId){
+  if(state.settings.discussionTimer>0 && !r.timerId && r.discussionTimeLeft>0){
+    var endAt = Date.now() + r.discussionTimeLeft*1000;
     r.timerId = setInterval(function(){
-      r.discussionTimeLeft--;
+      r.discussionTimeLeft = Math.max(0, Math.ceil((endAt - Date.now())/1000));
       if(r.discussionTimeLeft<=0){
-        r.discussionTimeLeft = 0;
         stopDiscussionTimer();
       }
       updateTimerUI();
-    },1000);
+    },250);
   }
 }
 function updateTimerUI(){
@@ -1218,7 +1235,6 @@ function nextVoter(){
   var r = state.round;
   if(r.voteIndex >= r.voteOrder.length-1){
     computeResults();
-    recordVoteStats();
     state.screen='results';
   } else {
     r.voteIndex++;
@@ -1262,7 +1278,7 @@ function afterResults(){
 function handleGuessInput(v){ state.round.guess = v; }
 function submitGuess(){
   var r = state.round;
-  var norm = function(s){ return (s||'').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); };
+  var norm = function(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,''); };
   if(!norm(r.guess)) return;
   r.guessCorrect = norm(r.guess) === norm(r.wordObj.word);
   r.guessSubmitted = true;
@@ -1295,7 +1311,9 @@ function render(){
     case 'gameEnd': html = renderGameEnd(); break;
     default: html = renderHome();
   }
-  app.innerHTML = '<div class="wrap">'+html+'</div>';
+  var inRound = ['roleReveal','hintIntro','hintRound','discussion','voteIntro','voting','results','impostorGuess'].indexOf(state.screen)!==-1 && !state.round.guessSubmitted;
+  var abortNav = inRound ? '<div class="top-nav"><button class="icon-btn" onclick="abortRound()" aria-label="Ukončit kolo">✕</button></div>' : '';
+  app.innerHTML = '<div class="wrap">'+abortNav+html+'</div>';
   if(state.screen==='discussion') { startDiscussionTimerIfNeeded(); updateTimerUI(); }
 }
 
@@ -1354,9 +1372,10 @@ function renderStats(){
       return '<div class="stat-row">' +
         '<div class="srank">'+(i+1)+'</div>' +
         '<div class="sname">'+escapeHtml(name)+'</div>' +
-        '<div class="sval">🎲 '+s.gamesPlayed+'</div>' +
-        '<div class="sval">😈 '+s.timesImpostor+'×</div>' +
-        '<div class="sval">🏆 '+wins+'×</div>' +
+        '<div class="sval">🎲<br>'+s.gamesPlayed+'</div>' +
+        '<div class="sval">😈<br>'+s.timesImpostor+'×</div>' +
+        '<div class="sval">🏆<br>'+wins+'×</div>' +
+        '<div class="sval">🎯<br>'+s.correctVotes+'×</div>' +
       '</div>';
     }).join('');
     body = '<div class="results-list" style="gap:8px; margin-top:4px;">'+rows+'</div>' +
@@ -1384,7 +1403,7 @@ function renderStats(){
     '<div class="top-nav"><button class="icon-btn" onclick="goHome()">←</button><div class="eyebrow" style="margin:0;">Statistiky</div><div style="width:40px"></div></div>' +
     '<div class="card">' +
       '<div class="section-title title-font">Žebříček hráčů</div>' +
-      '<div class="section-sub">🎲 odehrané hry · 😈 kolikrát Impostor · 🏆 výhry. Ukládá se jen v tomto zařízení.</div>' +
+      '<div class="section-sub">🎲 odehrané hry · 😈 kolikrát Impostor · 🏆 výhry · 🎯 trefné hlasy. Ukládá se jen v tomto zařízení.</div>' +
       body +
       backupBox +
     '</div>' +
@@ -1801,8 +1820,25 @@ function renderGameEnd(){
 }
 
 /* ---------- 6. START ---------- */
-state.stats = safeGet('impostor_stats_v1') || {};
-state.knownPlayers = safeGet('impostor_known_players_v1') || [];
+state.stats = cleanStats(safeGet('impostor_stats_v1'));
+state.knownPlayers = cleanKnownPlayers(safeGet('impostor_known_players_v1'));
+(function loadSetup(){
+  var saved = safeGet('impostor_setup_v1');
+  if(!saved) return;
+  var s = saved.settings || {};
+  Object.keys(state.settings).forEach(function(k){
+    if(typeof s[k]===typeof state.settings[k] && k!=='categories') state.settings[k] = s[k];
+  });
+  if(Array.isArray(s.categories)){
+    var cats = s.categories.filter(function(c){ return CATEGORY_ORDER.indexOf(c)!==-1; });
+    if(cats.length) state.settings.categories = cats;
+  }
+  var players = Array.isArray(saved.players) ? saved.players.filter(function(p){ return p && typeof p.id==='number' && typeof p.name==='string'; }) : [];
+  if(players.length>=3 && players.length<=12){
+    state.players = players.map(function(p){ return {id:p.id, name:p.name}; });
+    nextPlayerId = Math.max.apply(null, players.map(function(p){ return p.id; }));
+  }
+})();
 requestPersistentStorage();
 render();
 </script>

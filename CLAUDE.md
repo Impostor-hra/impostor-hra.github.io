@@ -53,32 +53,23 @@ přečte svou roli/slovo a schová.
 3b. **OTEVŘENÁ OTÁZKA — 2 impostoři:** při 3 hráčích se 2 impostoři domluví
    a přehlasují jediného poctivého. Navrženo (čeká na souhlas uživatele):
    2 impostoři až od 5 hráčů; hráči vyhrávají, když chytí aspoň jednoho.
-3c. **Hloubková kontrola kódu (2026-09-25) — nálezy, zatím NEOPRAVENO**
-   (uživatel chce opravy řešit příště; ověřeno testy v prohlížeči):
-   Vážnější:
-   - Dvojklik při hlasování: tlačítko „POKRAČOVAT“ (potvrzení hlasu) se
-     překrývá s „HLASOVAT TAJNĚ“ dalšího hráče a to s volbami hráčů →
-     rychlý dvojklik může odhlasovat za jiného / omylem. Obrazovka výběru
-     navíc neukazuje jméno hlasujícího. Návrh: krátký zámek kliknutí
-     (~400 ms) po každé změně obrazovky + jméno hlasujícího na výběru.
-   - Rozehrané kolo nejde ukončit (žádné „Domů“ od odhalení rolí po
-     výsledky) — v appce z plochy / v App Store verzi není ani reload.
-   - Prázdné jméno hráče (jen mezery) projde → prázdné jméno ve hře.
-   - Import zálohy: `stats:{A:null}` shodí appku a uloží se → obrazovka
-     statistik je pak trvale rozbitá; `knownPlayers` jako ne-pole shodí
-     obrazovku hráčů; čísla ve statistikách se neescapují (vložení HTML).
-   Menší:
-   - Tip v poslední šanci: „spiderman“ ≠ „Spider-Man“, dvojitá mezera
-     nebo pomlčka = špatně → ignorovat mezery a pomlčky.
-   - `initials()` u jména začínajícího emoji zobrazí rozbitý znak (�).
-   - Časovač diskuse počítá tiky `setInterval` → při zamčeném telefonu
-     se zastaví; přesnější je počítat podle času konce.
-   - Nastavení a seznam hráčů se nepamatují mezi spuštěními.
-   - Statistiky zapisují i výchozí jména „Hráč 1“ atd.
-   - Přerušená hra se počítá jako odehraná; `correctVotes` se počítá, ale
-     nezobrazuje; Google Fonts = externí závislost (offline/GDPR, nutné
-     odstranit kvůli App Store); prázdná CSS pravidla na začátku `<style>`;
-     „Trůny“ → „Hra o trůny“, „Frozen“ → „Ledové království“.
+3c. **Hloubková kontrola kódu (2026-09-25) — OPRAVENO** (ověřeno testy):
+   tlačítko ✕ „Ukončit kolo“ na obrazovkách rozehraného kola; statistiky
+   se zapisují až při výsledku kola (přerušené kolo se nepočítá) a
+   přeskakují výchozí jména „Hráč N“; prázdné jméno hráče blokuje start;
+   import zálohy i načtení z localStorage čistí data (`cleanStats`,
+   `cleanKnownPlayers`); tip v poslední šanci ignoruje diakritiku, mezery,
+   pomlčky a velikost písmen; `initials()` zvládá emoji; časovač diskuse
+   počítá podle času konce; nastavení + hráči se pamatují
+   (`impostor_setup_v1`, uloží se při startu hry); 🎯 trefné hlasy ve
+   statistikách; „Hra o trůny“, „Ledové království“; smazána prázdná CSS.
+   Záměrně NEŘEŠENO:
+   - Dvojklik při hlasování (tlačítka dalšího kroku se překrývají) —
+     uživatel to považuje za v pořádku, neopravovat.
+   Zbývá:
+   - Google Fonts = externí závislost (offline/GDPR, nutné vyřešit kvůli
+     App Store): buď písma vložit do souboru (base64, +stovky kB), nebo
+     systémová písma — čeká na rozhodnutí uživatele.
    - Klikací `div` místo `button` (.choice, .chip) → horší přístupnost.
 4. Později: možnost přepnout jazyk (čeština/angličtina) — vyžaduje vytáhnout
    UI texty do slovníku (aktuálně jsou napevno v render funkcích) a vytvořit
