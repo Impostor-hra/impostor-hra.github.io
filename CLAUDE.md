@@ -68,6 +68,15 @@ přečte svou roli/slovo a schová.
    počítá podle času konce; nastavení + hráči se pamatují
    (`impostor_setup_v1`, uloží se při startu hry); 🎯 trefné hlasy ve
    statistikách; „Hra o trůny“, „Ledové království“; smazána prázdná CSS.
+   Přidáno 2026-09-27 (na přání uživatele):
+   - ❌ netrefy ve statistikách = `gamesPlayed − timesImpostor − correctVotes`
+     (dopočítané, ne ukládané); 🎯/❌ počítají jen hlasy nevinných hráčů.
+   - Wake Lock API (`keepScreenOn` při každém kliknutí) — telefon neusne;
+     iOS Safari 16.4+, v appce z plochy až iOS 18.4+.
+   - Vážený výběr Impostora (`pickImpostors`, `state.lastImpostorRound`):
+     kdo byl Impostor před 1 / 2 / 3+ koly, má váhu 1 / 2 / 3. Záměrně ne
+     nulová šance (jinak by šlo odvodit, že minulý Impostor je nevinný).
+     Simulace 3 hráčů: opakování po sobě 33 % → 16 %.
    Záměrně NEŘEŠENO:
    - Dvojklik při hlasování (tlačítka dalšího kroku se překrývají) —
      uživatel to považuje za v pořádku, neopravovat.
