@@ -1,9 +1,10 @@
 # IMPOSTOR — párty slovní hra
 
-> **PŘIPOMENOUT UŽIVATELI na začátku příští session** (sám o to požádal
-> 2026-09-25): rozhodnout Google Fonts (vložit písma do souboru vs.
-> systémová písma, viz bod 3c) — nutné kvůli App Store. Pak pokračovat
-> přípravou na App Store (bod 5). Po připomenutí tuhle poznámku smazat.
+> **PŘIPOMÍNAT UŽIVATELI na začátku KAŽDÉ session, dokud to není hotové**
+> (výslovně o to požádal 2026-09-25 a znovu 2026-09-27): rozhodnout
+> Google Fonts (vložit písma do souboru vs. systémová písma, viz bod 3c)
+> — nutné kvůli App Store. Poznámku smazat až po vyřešení, ne po
+> připomenutí. Pak pokračovat přípravou na App Store (bod 5).
 
 ## Co to je
 Jednosouborová webová appka (`index.html`, čistý HTML/CSS/JS, žádný build krok,
@@ -112,9 +113,14 @@ přečte svou roli/slovo a schová.
    - Tip: Google Play jako jednodušší start (25 $ jednorázově, bez Macu).
    Vícejazyčnost (EN, pak DE) je odložená — otevřené otázky: stejné
    kategorie ve všech jazycích? Minecraft v cizích jazycích?
-6. **Trvale odloženo** (nerozjíždět bez výslovného zadání): automatická
-   cloudová synchronizace statistik napříč zařízeními (zvažovány
-   Supabase/Firebase). Uživatel to zatím nechce řešit.
+6. **Později (uživatel chce, ale ne teď — 2026-09-27):** synchronizace
+   statistik napříč zařízeními. Uživatel má účet na Vercelu. Navržený
+   přístup: malé API na Vercelu + databáze z Vercel Marketplace (Upstash
+   Redis / Neon, free tier); místo registrace „kód skupiny“ (např.
+   `KOCKA-4821`) sdílený mezi zařízeními rodiny; hra může zůstat na GitHub
+   Pages. Nutné vyřešit: hraní offline + dosynchronizace po připojení,
+   slučování dat ze dvou zařízení, dopad na App Store (už ne „Data Not
+   Collected“, potřeba zásady ochrany soukromí). Nerozjíždět bez zadání.
 
 ## Kontext, který je dobré znát
 - Hra je primárně pro rodinné/soukromé použití, ale uživatel zvažuje
